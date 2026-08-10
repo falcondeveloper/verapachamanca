@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vera family photographs organized by year." />
+  <title>Photo Gallery | Vera Pachamanca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header solid-header">
+    <a class="brand" href="index.html"><span class="brand-mark">VP</span><span><strong>verapachamanca.com</strong><small>Vera Family Reunion</small></span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><span class="sr-only">Open navigation</span></button>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#weekend">Weekend</a>
+      <a class="active-link" href="photos.html">Photos</a>
+      <a href="index.html#travel">Travel</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" type="button" aria-expanded="false">Our Story <span aria-hidden="true">▾</span></button>
+        <div class="nav-dropdown-menu">
+          <a href="index.html#history">Vera Family Story</a>
+          <div class="nav-submenu">
+            <button class="nav-submenu-toggle" type="button" aria-expanded="false">Golden Pachamanca <span aria-hidden="true">›</span></button>
+            <div class="nav-submenu-menu">
+              <a href="goldenpachamanca.html">Introduction</a>
+              <a href="golden-pachamanca.html">Pachamanca</a>
+              <a href="golden-history.html">History of the Golden Pachamanca</a>
+              <a href="golden-tumbamonte.html">Chonguinada &amp; Tumbamonte</a>
+              <a href="golden-map.html">Map to Pachamanca</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="nav-button" href="login.html">Family Login</a>
+    </nav>
+  </header>
+
+  <main class="inner-page">
+    <section class="gallery-header public-gallery-header">
+      <a class="back-link" href="photos.html">← All years</a>
+      <div><p class="eyebrow">Family photos</p><h1><span id="gallery-year">2026</span></h1><p>Anyone may view these photos. Notes and the family member who uploaded each image appear below the photo.</p></div>
+      <a class="button button-primary" href="login.html">Login to Upload</a>
+    </section>
+
+    <section class="section gallery-section">
+      <div class="photo-card-grid gallery-year-set" id="gallery-default">
+        <article class="photo-record-card">
+          <button class="photo-record-image" data-lightbox-image="images/nextgen.jpg" data-lightbox-caption="Our next generation carrying the Peruvian flag.">
+            <img src="images/nextgen.jpg" alt="Vera family members holding a Peruvian flag" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Our next generation carrying the Peruvian flag.</p>
+            <p class="photo-uploader">Uploaded by <strong>Maria Vera</strong></p>
+          </div>
+        </article>
+
+        <article class="photo-record-card">
+          <button class="photo-record-image" data-lightbox-image="images/bigfamily.jpg" data-lightbox-caption="The Vera family together during a winter gathering.">
+            <img src="images/bigfamily.jpg" alt="The Vera family at a winter gathering" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">The Vera family together during a winter gathering.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+          </div>
+        </article>
+
+        <article class="photo-record-card">
+          <button class="photo-record-image sample-photo sample-photo-one" data-lightbox-caption="Family members visiting in the backyard.">
+            <span>Family photo</span>
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family members visiting in the backyard.</p>
+            <p class="photo-uploader">Uploaded by <strong>Rosa Vera</strong></p>
+          </div>
+        </article>
+
+        <article class="photo-record-card">
+          <button class="photo-record-image sample-photo sample-photo-two" data-lightbox-caption="A quiet afternoon with three generations together.">
+            <span>Family photo</span>
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">A quiet afternoon with three generations together.</p>
+            <p class="photo-uploader">Uploaded by <strong>Daniel Vera</strong></p>
+          </div>
+        </article>
+      </div>
+
+      <div class="gallery-owner-notice gallery-year-set" id="gallery-before-notice" hidden>
+        <strong>Signed in as Clark Vera.</strong> You may edit the year or note on your own uploads and delete only photos you uploaded.
+      </div>
+      <div class="photo-card-grid gallery-year-set" id="gallery-before-1980" hidden>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/01-04aa.jpg" data-lightbox-caption="Family outing in the mountains.">
+            <img src="images/pre1980/01-04aa.jpg" alt="Historical Vera family photograph 1" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family outing in the mountains.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family outing in the mountains.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/02-11b.jpg" data-lightbox-caption="Family gathering at City Park in Denver, July 1961.">
+            <img src="images/pre1980/02-11b.jpg" alt="Historical Vera family photograph 2" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family gathering at City Park in Denver, July 1961.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family gathering at City Park in Denver, July 1961.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/03-33d.jpg" data-lightbox-caption="Family group photo during the winter of 1966.">
+            <img src="images/pre1980/03-33d.jpg" alt="Historical Vera family photograph 3" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family group photo during the winter of 1966.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family group photo during the winter of 1966.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/04-37k.jpg" data-lightbox-caption="Children dressed for a family and church event, April 17, 1966.">
+            <img src="images/pre1980/04-37k.jpg" alt="Historical Vera family photograph 4" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Children dressed for a family and church event, April 17, 1966.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Children dressed for a family and church event, April 17, 1966.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/05-37l.jpg" data-lightbox-caption="Family church photograph, March 27, 1966.">
+            <img src="images/pre1980/05-37l.jpg" alt="Historical Vera family photograph 5" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family church photograph, March 27, 1966.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family church photograph, March 27, 1966.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/06-37m.jpg" data-lightbox-caption="Family church photograph, April 17, 1966.">
+            <img src="images/pre1980/06-37m.jpg" alt="Historical Vera family photograph 6" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family church photograph, April 17, 1966.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family church photograph, April 17, 1966.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/07-48a-01-1.jpg" data-lightbox-caption="Historical family photo collection.">
+            <img src="images/pre1980/07-48a-01-1.jpg" alt="Historical Vera family photograph 7" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Historical family photo collection.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Historical family photo collection.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/08-74-leadvillewinter01.jpg" data-lightbox-caption="Leadville winter family photograph.">
+            <img src="images/pre1980/08-74-leadvillewinter01.jpg" alt="Historical Vera family photograph 8" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Leadville winter family photograph.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Leadville winter family photograph.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/09-74-leadvillewinter02.jpg" data-lightbox-caption="Leadville winter family photograph.">
+            <img src="images/pre1980/09-74-leadvillewinter02.jpg" alt="Historical Vera family photograph 9" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Leadville winter family photograph.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Leadville winter family photograph.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/10-75-conyshomegolden01.jpg" data-lightbox-caption="Family gathering at Cony’s home in Golden.">
+            <img src="images/pre1980/10-75-conyshomegolden01.jpg" alt="Historical Vera family photograph 10" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family gathering at Cony’s home in Golden.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family gathering at Cony’s home in Golden.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/11-76-leadvillelibrary04.jpg" data-lightbox-caption="Formal family photograph at the Leadville library.">
+            <img src="images/pre1980/11-76-leadvillelibrary04.jpg" alt="Historical Vera family photograph 11" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Formal family photograph at the Leadville library.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Formal family photograph at the Leadville library.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/12-76-pueblolibrelima01.jpg" data-lightbox-caption="Family photograph in Pueblo Libre, Lima.">
+            <img src="images/pre1980/12-76-pueblolibrelima01.jpg" alt="Historical Vera family photograph 12" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family photograph in Pueblo Libre, Lima.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family photograph in Pueblo Libre, Lima.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/13-77-preciowdding10dec77-leadville02.jpg" data-lightbox-caption="Precio wedding in Leadville, December 10, 1977.">
+            <img src="images/pre1980/13-77-preciowdding10dec77-leadville02.jpg" alt="Historical Vera family photograph 13" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Precio wedding in Leadville, December 10, 1977.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Precio wedding in Leadville, December 10, 1977.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/14-88-goldenco-0003.jpg" data-lightbox-caption="Family gathering in Golden, Colorado.">
+            <img src="images/pre1980/14-88-goldenco-0003.jpg" alt="Historical Vera family photograph 14" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family gathering in Golden, Colorado.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family gathering in Golden, Colorado.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/15-1967-pic1.jpg" data-lightbox-caption="First Communion photograph from 1967.">
+            <img src="images/pre1980/15-1967-pic1.jpg" alt="Historical Vera family photograph 15" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">First Communion photograph from 1967.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">First Communion photograph from 1967.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/16-1967-pic3.jpg" data-lightbox-caption="Family picnic photograph from 1967.">
+            <img src="images/pre1980/16-1967-pic3.jpg" alt="Historical Vera family photograph 16" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family picnic photograph from 1967.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family picnic photograph from 1967.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/17-1967-pic4.jpg" data-lightbox-caption="Family leaving church after First Communion in 1967.">
+            <img src="images/pre1980/17-1967-pic4.jpg" alt="Historical Vera family photograph 17" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family leaving church after First Communion in 1967.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family leaving church after First Communion in 1967.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/18-1967-pic5.jpg" data-lightbox-caption="Children gathered around the family table in 1967.">
+            <img src="images/pre1980/18-1967-pic5.jpg" alt="Historical Vera family photograph 18" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Children gathered around the family table in 1967.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Children gathered around the family table in 1967.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/19-1967-pic6.jpg" data-lightbox-caption="Family winter photograph from 1967.">
+            <img src="images/pre1980/19-1967-pic6.jpg" alt="Historical Vera family photograph 19" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Family winter photograph from 1967.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Family winter photograph from 1967.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+        <article class="photo-record-card owned-photo" data-photo-owner="Clark Vera">
+          <button class="photo-record-image" data-lightbox-image="images/pre1980/20-1967-pics2.jpg" data-lightbox-caption="Children gathered around the family table in 1967.">
+            <img src="images/pre1980/20-1967-pics2.jpg" alt="Historical Vera family photograph 20" loading="lazy" />
+          </button>
+          <div class="photo-record-body">
+            <p class="photo-note">Children gathered around the family table in 1967.</p>
+            <p class="photo-uploader">Uploaded by <strong>Clark Vera</strong></p>
+            <div class="photo-owner-actions" aria-label="Actions for your uploaded photo">
+              <button class="photo-edit-button" type="button">Edit year or note</button>
+              <button class="photo-delete-button" type="button">Delete</button>
+            </div>
+            <form class="photo-edit-form" hidden>
+              <label>Year<select class="photo-year-select" data-selected="before-1980"></select></label>
+              <label>Note<textarea rows="3">Children gathered around the family table in 1967.</textarea></label>
+              <div class="photo-edit-form-actions"><button class="photo-save-button" type="button">Save changes</button><button class="photo-cancel-button" type="button">Cancel</button></div>
+            </form>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close">×</button>
+    <div class="lightbox-content"><div class="lightbox-image"></div><p class="lightbox-caption"></p></div>
+  </div>
+
+  <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

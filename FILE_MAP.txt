@@ -1,0 +1,21 @@
+LIVE WEBSITE
+============
+index.html
+photos.html
+gallery.html
+login.html
+upload.html
+goldenpachamanca.html
+golden-pachamanca.html
+golden-history.html
+golden-tumbamonte.html
+golden-map.html
+css/
+js/
+images/
+
+NOT DEPLOYED BY VERCEL
+======================
+database/
+docs/
+README.md

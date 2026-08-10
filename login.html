@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Login | Vera Pachamanca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="login-page">
+  <header class="site-header transparent-header">
+    <a class="brand" href="index.html"><span class="brand-mark">VP</span><span><strong>Vera Pachamanca</strong><small>Family Reunion</small></span></a>
+    <a class="close-link" href="index.html">Return home ×</a>
+  </header>
+
+  <main class="login-layout">
+    <section class="login-message">
+      <p class="eyebrow">Private family area</p>
+      <h1>Welcome back, family.</h1>
+      <p>Sign in to upload family photos and manage the images you have contributed. Everyone may browse the public galleries without signing in.</p>
+      <div class="login-note">
+        <strong>Design preview</strong>
+        <span>This form is not connected to authentication yet.</span>
+      </div>
+    </section>
+
+    <section class="login-card">
+      <div class="login-card-heading"><span class="brand-mark">VP</span><h2>Family Login</h2><p>Use the account provided by the reunion administrator.</p></div>
+      <form action="upload.html">
+        <label>Email address<input type="email" placeholder="name@example.com" required></label>
+        <label>Password<input type="password" placeholder="Enter your password" required></label>
+        <div class="form-row"><label class="checkbox-label"><input type="checkbox"> Remember me</label><a href="#">Forgot password?</a></div>
+        <button class="button button-primary full-width" type="submit">Sign In to Upload</button>
+      </form>
+      <p class="login-help">Need an account? Contact the reunion administrator.</p>
+    </section>
+  </main>
+  <script src="js/main.js"></script>
+</body>
+</html>
