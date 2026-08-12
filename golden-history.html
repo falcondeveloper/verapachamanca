@@ -1,201 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Historical Golden Pachamanca family archive." />
+  <title>History of the Golden Pachamanca | Vera Family Reunion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="golden-page">
+  <header class="site-header solid-header">
+    <a class="brand" href="index.html" aria-label="Vera Pachamanca home">
+      <span class="brand-mark" aria-hidden="true">VP</span>
+      <span><strong>verapachamanca.com</strong><small>Vera Family Reunion</small></span>
+    </a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><span class="sr-only">Open navigation</span></button>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#weekend">Weekend</a>
+      <a href="photos.html">Photos</a>
+      <a href="index.html#travel">Travel</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" type="button" aria-expanded="false">Our Story <span aria-hidden="true">▾</span></button>
+        <div class="nav-dropdown-menu">
+          <a href="index.html#history">Vera Family Story</a>
+          <div class="nav-submenu">
+            <button class="nav-submenu-toggle" type="button" aria-expanded="false">Golden Pachamanca <span aria-hidden="true">›</span></button>
+            <div class="nav-submenu-menu">
+              <a href="goldenpachamanca.html">Introduction</a>
+              <a href="golden-pachamanca.html">Pachamanca</a>
+              <a href="golden-history.html">History of the Golden Pachamanca</a>
+              <a href="golden-tumbamonte.html">Chonguinada &amp; Tumbamonte</a>
+              <a href="golden-map.html">Map to Pachamanca</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="nav-button" href="login.html">Family Login</a>
+    </nav>
+  </header>
+  <main class="golden-main">
+    <section class="golden-hero">
+      <div class="golden-hero-inner">
+        <p class="eyebrow">A Colorado tradition since 1960</p>
+        <h1>History of the Golden Pachamanca</h1>
+        <p class="golden-hero-copy">A preserved chapter of the Vera family’s Peruvian tradition in Colorado.</p>
+      </div>
+    </section>
+    <section class="golden-shell">
+      <div class="golden-content-card">
+        <aside class="archive-notice" role="note">
+          <strong>Historical archive</strong>
+          <p>This section preserves material from the original GoldenPachamanca.com website created in the early 2000s. Dates, prices, telephone numbers, directions, and event details are historical and are not current reunion information.</p>
+        </aside>
+        <nav class="golden-tabs" aria-label="Golden Pachamanca historical pages">
+          <a href="goldenpachamanca.html">Introduction</a>
+          <a href="golden-pachamanca.html">Pachamanca</a>
+          <a class="active" href="golden-history.html">History</a>
+          <a href="golden-tumbamonte.html">Chonguinada &amp; Tumbamonte</a>
+          <a href="golden-map.html">Map</a>
+        </nav>
+        <article class="golden-article">
+          
+<header class="article-heading">
+  <p class="article-kicker">Dedicated to Sam Vera and Isabel Thompson</p>
+  <h2>History of the Golden Pachamanca</h2>
+</header>
+<figure class="archive-image">
+  <img src="https://web.archive.org/web/20040901105256im_/http://www.goldenpachamanca.com/images/Fam1994.jpg" alt="The Vera family in Golden, Colorado in 1994" loading="lazy">
+  <figcaption>The Vera family, Golden, Colorado, 1994 — directly from the Wayback Machine.</figcaption>
+</figure>
+<p>The Golden Pachamanca was held annually by Dick Thompson and the Vera family. Dick Thompson and Sam Vera became friends in the 1970s.</p>
+<p>Sam Vera moved from Peru to Denver in 1958, followed by his wife and children. The family then moved to Leadville, where Sam worked as a mining engineer for the Climax Molybdenum Mine. The local tradition began in 1960, when Sam and Dina Vera and their children celebrated their first pachamanca with friends and associates from the mine.</p>
+<p>For the next sixteen years, the Veras continued holding annual pachamancas and introducing Peruvian cooking to people in Leadville and Climax.</p>
+<h3>Major gatherings</h3>
+<ul class="heritage-list">
+  <li><strong>1972:</strong> Climax inaugurated a major open-pit molybdenum mine with a pachamanca for approximately 480 invited executives, staff members, and managers.</li>
+  <li><strong>1975:</strong> The Veras prepared a pachamanca for approximately 380 students, professors, friends, and guests during E-Day at the Colorado School of Mines.</li>
+  <li><strong>1976:</strong> Sam Vera retired from Climax and moved to Golden, where many close friends and relatives lived.</li>
+</ul>
+<p>Sam Vera died in the fall of 2002, and Isabel Thompson died in 2001. The archived history remembers both of them for working tirelessly to make the pachamanca a special gathering.</p>
+<p class="source-note">Text preserved and lightly edited for readability from the original history page archived September 1, 2004.</p>
 
-document.addEventListener("DOMContentLoaded", () => {
-  const menuButton = document.querySelector(".menu-toggle");
-  const nav = document.querySelector(".main-nav");
-  if (menuButton && nav) {
-    menuButton.addEventListener("click", () => {
-      const isOpen = nav.classList.toggle("open");
-      menuButton.setAttribute("aria-expanded", String(isOpen));
-    });
-    nav.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-      nav.classList.remove("open");
-      menuButton.setAttribute("aria-expanded", "false");
-    }));
-  }
-
-
-  document.querySelectorAll(".nav-dropdown-toggle").forEach(button => {
-    button.addEventListener("click", event => {
-      if (window.innerWidth > 900) return;
-      event.preventDefault();
-      const dropdown = button.closest(".nav-dropdown");
-      const open = dropdown.classList.toggle("open");
-      button.setAttribute("aria-expanded", String(open));
-    });
-  });
-
-  document.querySelectorAll(".nav-submenu-toggle").forEach(button => {
-    button.addEventListener("click", event => {
-      event.preventDefault();
-      const submenu = button.closest(".nav-submenu");
-      const open = submenu.classList.toggle("open");
-      button.setAttribute("aria-expanded", String(open));
-    });
-  });
-
-  const tabs = document.querySelectorAll(".day-tab");
-  const panels = document.querySelectorAll(".schedule-panel");
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => { t.classList.remove("active"); t.setAttribute("aria-selected", "false"); });
-      panels.forEach(p => p.classList.remove("active"));
-      tab.classList.add("active");
-      tab.setAttribute("aria-selected", "true");
-      document.querySelector(`[data-panel="${tab.dataset.day}"]`)?.classList.add("active");
-    });
-  });
-
-  const countdown = document.querySelector(".countdown");
-  if (countdown) {
-    const target = new Date(countdown.dataset.date).getTime();
-    const updateCountdown = () => {
-      const distance = Math.max(0, target - Date.now());
-      const days = Math.floor(distance / 86400000);
-      const hours = Math.floor((distance % 86400000) / 3600000);
-      const minutes = Math.floor((distance % 3600000) / 60000);
-      document.getElementById("days").textContent = String(days).padStart(3, "0");
-      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
-      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
-    };
-    updateCountdown();
-    setInterval(updateCountdown, 60000);
-  }
-
-  const galleryItems = document.querySelectorAll(".gallery-item");
-  const lightbox = document.querySelector(".lightbox");
-  const lightboxImage = document.querySelector(".lightbox-image");
-  const lightboxCaption = document.querySelector(".lightbox-caption");
-  galleryItems.forEach(item => item.addEventListener("click", () => {
-    if (!lightbox) return;
-    lightbox.classList.add("open");
-    lightbox.setAttribute("aria-hidden", "false");
-    lightboxCaption.textContent = item.textContent.trim();
-    lightboxImage.style.background = getComputedStyle(item).background;
-  }));
-  document.querySelector(".lightbox-close")?.addEventListener("click", () => {
-    lightbox.classList.remove("open");
-    lightbox.setAttribute("aria-hidden", "true");
-  });
-  lightbox?.addEventListener("click", event => {
-    if (event.target === lightbox) {
-      lightbox.classList.remove("open");
-      lightbox.setAttribute("aria-hidden", "true");
-    }
-  });
-
-  // Public gallery year is driven by the URL, e.g. gallery.html?year=1998.
-  const galleryYear = document.getElementById("gallery-year");
-  if (galleryYear) {
-    const rawYear = new URLSearchParams(window.location.search).get("year") || "2026";
-    const requestedYear = rawYear.toLowerCase().replace(/[_\s]+/g, "-");
-    const isBefore1980 = ["before-1980", "pre-1980", "before1980", "pre1980"].includes(requestedYear);
-    const displayYear = isBefore1980 ? "Before 1980" : rawYear;
-    galleryYear.textContent = displayYear;
-    document.title = `${displayYear} Photos | Vera Pachamanca`;
-    const defaultGallery = document.getElementById("gallery-default");
-    const beforeGallery = document.getElementById("gallery-before-1980");
-    const beforeNotice = document.getElementById("gallery-before-notice");
-    const showingBefore = isBefore1980;
-    if (defaultGallery) defaultGallery.hidden = showingBefore;
-    if (beforeGallery) beforeGallery.hidden = !showingBefore;
-    if (beforeNotice) beforeNotice.hidden = !showingBefore;
-  }
-
-  // New gallery cards support local images and retain notes in the lightbox.
-  document.querySelectorAll(".photo-record-image").forEach(item => {
-    item.addEventListener("click", () => {
-      if (!lightbox || !lightboxImage || !lightboxCaption) return;
-      lightbox.classList.add("open");
-      lightbox.setAttribute("aria-hidden", "false");
-      lightboxCaption.textContent = item.dataset.lightboxCaption || "Family photo";
-      const source = item.dataset.lightboxImage;
-      if (source) {
-        lightboxImage.style.background = "#111";
-        lightboxImage.innerHTML = `<img src="${source}" alt="Expanded family photo">`;
-      } else {
-        lightboxImage.innerHTML = "";
-        lightboxImage.style.background = getComputedStyle(item).background;
-      }
-    });
-  });
-
-  // Upload prototype: every selected image receives its own year and optional note.
-  const buildYearOptions = (selected = "2026") => {
-    const currentYear = new Date().getFullYear();
-    const options = ['<option value="before-1980">Before 1980</option>'];
-    for (let year = currentYear; year >= 1980; year -= 1) {
-      options.push(`<option value="${year}"${String(year) === String(selected) ? " selected" : ""}>${year}</option>`);
-    }
-    return options.join("");
-  };
-
-  document.querySelectorAll(".photo-year-select").forEach(select => {
-    select.innerHTML = buildYearOptions(select.dataset.selected || "2026");
-  });
-
-  const photoFiles = document.getElementById("photo-files");
-  const previewList = document.getElementById("upload-preview-list");
-  const uploadActionsText = document.querySelector(".upload-actions p");
-  if (photoFiles && previewList) {
-    photoFiles.addEventListener("change", () => {
-      const files = Array.from(photoFiles.files || []);
-      previewList.innerHTML = "";
-      files.forEach((file, index) => {
-        const card = document.createElement("article");
-        card.className = "upload-preview-card";
-        const objectUrl = URL.createObjectURL(file);
-        card.innerHTML = `
-          <div class="upload-preview-image"><img src="${objectUrl}" alt="Preview of ${file.name}"></div>
-          <div class="upload-preview-fields">
-            <div class="upload-file-heading"><strong>${file.name}</strong><button type="button" class="upload-remove">Remove</button></div>
-            <label>Year<select class="photo-year-select">${buildYearOptions("2026")}</select></label>
-            <label>Optional note<textarea rows="3" placeholder="Add a short note about this photo"></textarea></label>
-          </div>`;
-        card.querySelector(".upload-remove").addEventListener("click", () => {
-          URL.revokeObjectURL(objectUrl);
-          card.remove();
-          const remaining = previewList.children.length;
-          if (uploadActionsText) uploadActionsText.innerHTML = `<strong>${remaining} photo${remaining === 1 ? "" : "s"} ready.</strong> A new year will be created automatically if it does not already exist.`;
-        });
-        previewList.appendChild(card);
-      });
-      if (uploadActionsText) uploadActionsText.innerHTML = `<strong>${files.length} photo${files.length === 1 ? "" : "s"} ready.</strong> A new year will be created automatically if it does not already exist.`;
-    });
-  }
-
-  // Static ownership preview: only the signed-in uploader sees edit/delete controls.
-  document.querySelectorAll(".photo-edit-button").forEach(button => {
-    button.addEventListener("click", () => {
-      const card = button.closest(".photo-record-card");
-      const form = card?.querySelector(".photo-edit-form");
-      if (form) form.hidden = false;
-    });
-  });
-  document.querySelectorAll(".photo-cancel-button").forEach(button => {
-    button.addEventListener("click", () => {
-      const form = button.closest(".photo-edit-form");
-      if (form) form.hidden = true;
-    });
-  });
-  document.querySelectorAll(".photo-save-button").forEach(button => {
-    button.addEventListener("click", () => {
-      const card = button.closest(".photo-record-card");
-      const form = button.closest(".photo-edit-form");
-      const note = form?.querySelector("textarea")?.value.trim();
-      const noteDisplay = card?.querySelector(".photo-note");
-      if (noteDisplay && note) noteDisplay.textContent = note;
-      if (form) form.hidden = true;
-      alert("Design preview: the API will save the new year and note.");
-    });
-  });
-  document.querySelectorAll(".photo-delete-button").forEach(button => {
-    button.addEventListener("click", () => {
-      alert("Design preview: the API will verify ownership before deleting this photo.");
-    });
-  });
-
-  document.getElementById("preview-upload-button")?.addEventListener("click", () => {
-    alert("Design preview only. The API and storage upload will be connected after approval.");
-  });
-
-});
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>Golden Pachamanca historical archive</p></div></footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

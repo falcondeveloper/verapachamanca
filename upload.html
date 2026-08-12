@@ -3,24 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Historical Golden Pachamanca family archive." />
-  <title>Pachamanca | Vera Family Reunion</title>
+  <meta name="description" content="Upload Vera family photographs and assign a year to each image." />
+  <title>Upload Photos | Vera Pachamanca</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="golden-page">
+<body>
   <header class="site-header solid-header">
-    <a class="brand" href="index.html" aria-label="Vera Pachamanca home">
-      <span class="brand-mark" aria-hidden="true">VP</span>
-      <span><strong>verapachamanca.com</strong><small>Vera Family Reunion</small></span>
-    </a>
+    <a class="brand" href="index.html"><span class="brand-mark">VP</span><span><strong>verapachamanca.com</strong><small>Vera Family Reunion</small></span></a>
     <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><span class="sr-only">Open navigation</span></button>
     <nav class="main-nav" id="main-nav">
       <a href="index.html#weekend">Weekend</a>
       <a href="photos.html">Photos</a>
-      <a href="family-tree.html">Family Tree</a>
       <a href="index.html#travel">Travel</a>
       <div class="nav-dropdown">
         <button class="nav-dropdown-toggle" type="button" aria-expanded="false">Our Story <span aria-hidden="true">▾</span></button>
@@ -38,59 +34,59 @@
           </div>
         </div>
       </div>
-      <a class="nav-button" href="login.html">Family Login</a>
+      <a class="nav-button" href="photos.html">View Photos</a>
     </nav>
   </header>
-  <main class="golden-main">
-    <section class="golden-hero">
-      <div class="golden-hero-inner">
-        <p class="eyebrow">Ancient Peruvian cooking tradition</p>
-        <h1>Pachamanca</h1>
-        <p class="golden-hero-copy">A preserved chapter of the Vera family’s Peruvian tradition in Colorado.</p>
-      </div>
-    </section>
-    <section class="golden-shell">
-      <div class="golden-content-card">
-        <aside class="archive-notice" role="note">
-          <strong>Historical archive</strong>
-          <p>This section preserves material from the original GoldenPachamanca.com website created in the early 2000s. Dates, prices, telephone numbers, directions, and event details are historical and are not current reunion information.</p>
-        </aside>
-        <nav class="golden-tabs" aria-label="Golden Pachamanca historical pages">
-          <a href="goldenpachamanca.html">Introduction</a>
-          <a class="active" href="golden-pachamanca.html">Pachamanca</a>
-          <a href="golden-history.html">History</a>
-          <a href="golden-tumbamonte.html">Chonguinada &amp; Tumbamonte</a>
-          <a href="golden-map.html">Map</a>
-        </nav>
-        <article class="golden-article">
-          
-<header class="article-heading">
-  <p class="article-kicker">The food of the kings of the Peruvian Empire</p>
-  <h2>Pachamanca</h2>
-</header>
-<figure class="archive-image archive-image-small">
-  <img src="https://web.archive.org/web/20040901094446im_/http://www.goldenpachamanca.com/images/pacha.jpg" alt="Archived illustration of a traditional pachamanca meal" loading="lazy">
-  <figcaption>Image served directly from the Internet Archive’s Wayback Machine.</figcaption>
-</figure>
-<p>The archived site described a meal of beef, chicken, pork, potatoes, corn on the cob, dessert, ají, and salad. Pachamanca is the Quechua name for an ancient cooking method associated with the Incas.</p>
-<p>At high elevations, thin air and a lower boiling temperature can make cooking slow. The pachamanca oven addressed this by trapping heat and pressure underground while giving the food a distinctive flavor.</p>
-<h3>How the earth oven was prepared</h3>
-<ol class="heritage-steps">
-  <li>A small hole was dug in the earth and lined with rocks, forming a structure resembling an igloo.</li>
-  <li>A fire heated the stones for approximately one and a half to two hours.</li>
-  <li>The heated stones were removed, and potatoes, sweet potatoes, corn, and marinated meats were placed inside.</li>
-  <li>Hot stones were returned and intermixed with the food. Desserts such as sweet cheese, pumpkin with brown sugar, or humitas were placed last.</li>
-  <li>Large green leaves and several inches of earth sealed the oven while the food roasted.</li>
-</ol>
-<blockquote><strong>Pacha</strong> = earth or dirt<br><strong>Manca</strong> = kettle</blockquote>
-<p>The original text noted that while the food cooked, guests socialized and enjoyed chicha or beer before the pachamanca was uncovered and served.</p>
-<p class="source-note">Text adapted from the original Pachamanca page archived September 1, 2004.</p>
 
+  <main class="inner-page upload-page">
+    <section class="page-hero upload-page-hero">
+      <p class="eyebrow">Signed in as Maria Vera</p>
+      <h1>Upload Family Photos</h1>
+      <p>Select several images at once. You can assign a different year and note to every photo before uploading.</p>
+    </section>
+
+    <section class="section upload-workspace">
+      <div class="upload-instructions">
+        <h2>How it works</h2>
+        <ol>
+          <li>Select one or more photos.</li>
+          <li>Choose <strong>Before 1980</strong> or a year from 1980 through the present for each image.</li>
+          <li>Add an optional note.</li>
+          <li>The finished system will resize the images and create any missing year automatically.</li>
+          <li>After uploading, you may edit the year or note and delete only photos you uploaded.</li>
+        </ol>
+      </div>
+
+      <label class="upload-dropzone" for="photo-files">
+        <span class="upload-icon">＋</span>
+        <strong>Select Photos</strong>
+        <span>JPEG, PNG, WebP or HEIC</span>
+        <input id="photo-files" type="file" accept="image/*,.heic,.heif" multiple />
+      </label>
+
+      <div id="upload-preview-list" class="upload-preview-list" aria-live="polite">
+        <article class="upload-preview-card demo-upload-card">
+          <div class="upload-preview-image"><img src="images/nextgen.jpg" alt="Sample selected photo" /></div>
+          <div class="upload-preview-fields">
+            <div class="upload-file-heading"><strong>family-photo-01.jpg</strong><span>Sample preview</span></div>
+            <label>Year
+              <select class="photo-year-select"></select>
+            </label>
+            <label>Optional note
+              <textarea rows="3" placeholder="Add a short note about this photo">Our next generation carrying the Peruvian flag.</textarea>
+            </label>
+          </div>
         </article>
+      </div>
+
+      <div class="upload-actions">
+        <p><strong>1 photo ready.</strong> A new year will be created automatically if it does not already exist.</p>
+        <button class="button button-primary" type="button" id="preview-upload-button">Upload Photos</button>
       </div>
     </section>
   </main>
-  <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>Golden Pachamanca historical archive</p></div></footer>
+
+  <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
   <script src="js/main.js"></script>
 </body>
 </html>
