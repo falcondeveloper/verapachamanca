@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
   <meta name="description" content="Upload Vera family photographs and assign a year to each image." />
   <title>Upload Photos | Vera Pachamanca</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/site-access.js"></script>
 </head>
 <body>
   <header class="site-header solid-header">
@@ -17,6 +19,7 @@
     <nav class="main-nav" id="main-nav">
       <a href="index.html#weekend">Weekend</a>
       <a href="photos.html">Photos</a>
+      <a href="volunteers.html">Volunteers</a>
       <a href="index.html#travel">Travel</a>
       <div class="nav-dropdown">
         <button class="nav-dropdown-toggle" type="button" aria-expanded="false">Our Story <span aria-hidden="true">▾</span></button>
@@ -34,13 +37,14 @@
           </div>
         </div>
       </div>
-      <a class="nav-button" href="photos.html">View Photos</a>
+      <a href="photos.html">View Photos</a>
+      <button class="nav-button nav-button-as-button" id="upload-logout-button" type="button">Logout</button>
     </nav>
   </header>
 
   <main class="inner-page upload-page">
     <section class="page-hero upload-page-hero">
-      <p class="eyebrow">Signed in as Maria Vera</p>
+      <p class="eyebrow" id="signed-in-user">Checking login...</p>
       <h1>Upload Family Photos</h1>
       <p>Select several images at once. You can assign a different year and note to every photo before uploading.</p>
     </section>
@@ -88,5 +92,6 @@
 
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
   <script src="js/main.js"></script>
+  <script src="js/require-login.js"></script>
 </body>
 </html>

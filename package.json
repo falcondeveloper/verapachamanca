@@ -1,0 +1,13 @@
+{
+  "name": "verapachamanca",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Vera family reunion website",
+  "type": "commonjs",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "mysql2": "3.24.2"
+  }
+}

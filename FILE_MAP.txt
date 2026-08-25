@@ -1,10 +1,14 @@
 LIVE WEBSITE
 ============
 index.html
+access.html
 photos.html
 gallery.html
 login.html
 upload.html
+volunteers.html
+family-tree.html
+menu.html
 goldenpachamanca.html
 golden-pachamanca.html
 golden-history.html
@@ -13,9 +17,18 @@ golden-map.html
 css/
 js/
 images/
+robots.txt
+vercel.json
 
-NOT DEPLOYED BY VERCEL
-======================
+VERCEL SERVER FUNCTIONS
+=======================
+api/
+lib/
+package.json
+
+SOURCE / DATABASE FILES NOT DEPLOYED AS STATIC CONTENT
+======================================================
 database/
 docs/
 README.md
+FILE_MAP.txt

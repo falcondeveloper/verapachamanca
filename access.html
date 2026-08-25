@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
+  <title>Family Access | Vera Pachamanca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="access-page">
+  <main class="access-shell">
+    <section class="access-card">
+      <span class="brand-mark access-mark">VP</span>
+      <p class="eyebrow">Vera Family Reunion</p>
+      <h1>Family Access</h1>
+      <p class="access-intro">Enter the family access code to continue to verapachamanca.com.</p>
+
+      <form id="family-access-form" class="access-form">
+        <label for="family-access-code">Family access code</label>
+        <input id="family-access-code" name="code" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="12" autofocus required />
+        <button class="button button-primary full-width" type="submit">Enter Website</button>
+        <p id="family-access-error" class="form-error" role="alert" hidden>That access code is not correct.</p>
+      </form>
+
+      <p class="access-note">You should only need to enter this code once on this device.</p>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const CODE = "1517";
+      const COOKIE_NAME = "vera_family_access";
+
+      const alreadyAllowed = document.cookie
+        .split(";")
+        .map(part => part.trim())
+        .some(part => part === `${COOKIE_NAME}=${CODE}`);
+
+      const params = new URLSearchParams(window.location.search);
+      let next = params.get("next") || "/index.html";
+      if (!next.startsWith("/") || next.startsWith("//")) next = "/index.html";
+
+      if (alreadyAllowed) {
+        window.location.replace(next);
+        return;
+      }
+
+      const form = document.getElementById("family-access-form");
+      const input = document.getElementById("family-access-code");
+      const error = document.getElementById("family-access-error");
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        if (input.value.trim() !== CODE) {
+          error.hidden = false;
+          input.select();
+          return;
+        }
+
+        document.cookie = `${COOKIE_NAME}=${CODE}; Max-Age=31536000; Path=/; SameSite=Lax; Secure`;
+        window.location.replace(next);
+      });
+
+      input.addEventListener("input", () => {
+        error.hidden = true;
+      });
+    })();
+  </script>
+</body>
+</html>

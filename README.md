@@ -8,55 +8,84 @@ Simple family reunion website.
 - CSS
 - Vanilla JavaScript
 - GitHub for source control
-- Vercel for hosting and small API functions
-- PostgreSQL on Supabase for data
-- Supabase Storage bucket `vera-photos` for new user-uploaded photos
+- Vercel for hosting and small Node.js API functions
+- GoDaddy MySQL / MariaDB for users, sessions, events, photos, and volunteers
+- GoDaddy SFTP/web storage for uploaded family photos
 
-No React and no frontend framework are required.
+No React and no frontend framework.
 
-## Repository layout
+## Family access gate
 
-- `index.html`, other `.html` files — website pages
-- `css/` — existing site styles
-- `js/` — existing browser JavaScript
-- `images/` — existing site and historical images
-- `database/` — current KISS PostgreSQL scripts; excluded from Vercel deployment
-- `docs/` — original prototype notes; excluded from Vercel deployment
-- `api/` — will be added when login, calendar, and photo upload APIs are connected
+Every normal page loads `js/site-access.js`.
 
-## Images
+Family access code: `1517`
 
-Existing site images stay in `images/` and deploy with the website.
+After the correct code is entered, the browser keeps a one-year cookie named:
 
-New photos uploaded by family members will go to the public Supabase Storage bucket:
+`vera_family_access`
 
-`vera-photos`
+`robots.txt`, page-level `noindex`, and Vercel `X-Robots-Tag` headers are also included to discourage search-engine crawling/indexing.
 
-The `vera_photos` PostgreSQL table will store the image URL plus simple metadata such as year, caption, and uploader.
+This family code is a simple privacy gate, not high-security authentication.
 
-## Vercel deployment
+## User login
 
-Import this GitHub repository into Vercel.
+User accounts are stored in `vera_users`.
 
-Use:
+- Admin creates accounts.
+- Passwords are stored in `password_text` as required by this project.
+- Users can login and logout.
+- Users cannot register.
+- Users cannot change/reset their own password.
+- Password changes are handled manually by Clark.
+- `vera_sessions` keeps users logged in with no normal expiration.
 
-- Framework Preset: `Other`
-- Build Command: leave blank
-- Output Directory: `.`
+## Volunteers
 
-The website files are already at the repository root, so no Root Directory change is needed.
+`volunteers.html` is available to anyone who has entered the family access code.
 
-## Database
+Visitors can:
 
-The current database is intentionally simple:
+- View volunteers
+- Add a volunteer
+- Edit a volunteer
+- Delete a volunteer
 
-- `vera_users`
-- `vera_sessions`
-- `vera_events`
-- `vera_photos`
+Volunteer records are stored in `vera_event_volunteers`.
 
-There are no Vera custom database functions, triggers, or required extensions.
+Run `database/02_LOAD_2026_EVENTS_MYSQL.sql` once so the volunteer page has the current 2026 events to choose from.
 
-## Secrets
+## Vercel environment variables
 
-Do not put database passwords, Supabase service keys, or other secrets in HTML or browser JavaScript. When the API is connected, secrets will be stored as Vercel Environment Variables.
+Add these in Vercel Project Settings → Environment Variables:
+
+- `MYSQL_HOST`
+- `MYSQL_PORT`
+- `MYSQL_DATABASE`
+- `MYSQL_USER`
+- `MYSQL_PASSWORD`
+- `SITE_ACCESS_CODE` = `1517`
+
+Do not put the MySQL password in browser JavaScript or GitHub source.
+
+## API routes
+
+- `/api/health` — test MySQL connection
+- `/api/login` — login
+- `/api/session` — current logged-in user
+- `/api/logout` — logout
+- `/api/events` — active events
+- `/api/volunteers` — list/add/edit/delete volunteers
+
+## Dependency versions
+
+Verified against the npm package listing on 2026-08-25:
+
+- Node.js: 22.x
+- mysql2: 3.24.2 (exact version pinned in `package.json`)
+
+## Deployment
+
+Vercel preset: `Other`
+
+Website files remain at the repository root. Vercel automatically recognizes `/api/*.js` as Node.js functions.
