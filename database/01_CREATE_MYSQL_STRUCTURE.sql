@@ -12,7 +12,7 @@ USE vera;
 CREATE TABLE IF NOT EXISTS vera_users (
     user_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     username VARCHAR(100) NOT NULL,
-    password_text TEXT NOT NULL,
+    password_text TEXT NULL,
     display_name VARCHAR(150) NULL,
     email VARCHAR(190) NULL,
     birthday DATE NULL,
@@ -206,12 +206,10 @@ START TRANSACTION;
 
 INSERT INTO vera_users (
     username,
-    password_text,
     display_name
 )
 VALUES (
     '__vera_test_user__',
-    'test',
     NULL
 );
 

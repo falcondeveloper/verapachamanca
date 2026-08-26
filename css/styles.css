@@ -188,7 +188,7 @@ h1,h2,h3 { font-family:"Libre Baskerville", serif; }
 .login-card-heading p { color:var(--ink-soft); font-size:12px; }
 .login-card form { display:grid; gap:18px; margin-top:30px; }
 .login-card label { font-size:11px; font-weight:700; }
-.login-card input[type="email"],.login-card input[type="password"] { width:100%; height:50px; margin-top:7px; border:1px solid var(--line); border-radius:11px; padding:0 15px; background:white; }
+.login-card input[type="email"],.login-card input[type="password"],.login-card input[type="text"],.login-card select { width:100%; height:50px; margin-top:7px; border:1px solid var(--line); border-radius:11px; padding:0 15px; background:white; color:var(--ink); }
 .form-row { display:flex; justify-content:space-between; align-items:center; font-size:11px; }
 .checkbox-label { display:flex; align-items:center; gap:7px; }
 .form-row a { color:var(--terracotta); }
@@ -707,3 +707,15 @@ h1,h2,h3 { font-family:"Libre Baskerville", serif; }
     color: var(--green-dark);
   }
 }
+
+/* Live GoDaddy photo upload */
+.upload-preview-fields input[type="text"] { width:100%; margin-top:7px; border:1px solid var(--line); border-radius:10px; background:#fff; padding:11px 12px; color:var(--ink); }
+.upload-note-label { grid-column:1/-1; }
+.upload-item-status { grid-column:1/-1; min-height:18px; font-size:12px; font-weight:700; }
+.upload-item-status.working { color:#8a6a20; }
+.upload-item-status.success { color:#26734d; }
+.upload-item-status.error { color:#a43c31; }
+.upload-complete { border-color:rgba(38,115,77,.45); }
+.upload-actions button:disabled { opacity:.65; cursor:wait; }
+.live-photo-grid { margin-top:28px; }
+.photo-family-member { margin:8px 0; color:var(--ink-soft); font-size:12px; }

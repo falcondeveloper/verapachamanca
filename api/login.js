@@ -12,11 +12,10 @@ module.exports = async function handler(req, res) {
   if (!requireSiteAccess(req, res)) return;
 
   const body = getJsonBody(req);
-  const username = String(body.username || "").trim();
-  const password = String(body.password || "");
+  const userId = Number(body.user_id);
 
-  if (!username || !password) {
-    return res.status(400).json({ error: "Enter your username and password." });
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return res.status(400).json({ error: "Select your name first." });
   }
 
   let db;
@@ -24,16 +23,16 @@ module.exports = async function handler(req, res) {
     db = await getDb();
 
     const [rows] = await db.execute(
-      `SELECT user_id, username, password_text, display_name, is_admin, is_active
+      `SELECT user_id, username, display_name, is_admin, is_active
        FROM vera_users
-       WHERE username = ?
+       WHERE user_id = ?
        LIMIT 1`,
-      [username]
+      [userId]
     );
 
     const user = rows[0];
-    if (!user || !user.is_active || String(user.password_text) !== password) {
-      return res.status(401).json({ error: "Username or password is not correct." });
+    if (!user || !user.is_active) {
+      return res.status(404).json({ error: "That family member is not available." });
     }
 
     const token = crypto.randomBytes(32).toString("hex");
