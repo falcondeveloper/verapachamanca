@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
   <meta name="description" content="Upload Vera family photographs and assign a year to each image." />
-  <title>Upload Photos | Vera Pachamanca</title>
+  <title>Upload Photos & Videos | Vera Pachamanca</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -45,34 +45,35 @@
   <main class="inner-page upload-page">
     <section class="page-hero upload-page-hero">
       <p class="eyebrow" id="signed-in-user">Checking login...</p>
-      <h1>Upload Family Photos</h1>
-      <p>Select several images at once. You can assign a different year and note to every photo before uploading.</p>
+      <h1>Upload Family Photos & Videos</h1>
+      <p>Select photos or short videos. You can assign a year and note to every item before uploading.</p>
     </section>
 
     <section class="section upload-workspace">
       <div class="upload-instructions">
         <h2>How it works</h2>
         <ol>
-          <li>Select one or more photos.</li>
-          <li>Choose <strong>Before 1980</strong> or a year from 1980 through the present for each image.</li>
+          <li>Select one or more photos or videos.</li>
+          <li>Choose <strong>Before 1980</strong> or a year from 1980 through the present for each item.</li>
           <li>Add an optional note.</li>
-          <li>Photos are resized automatically before they are uploaded.</li>
-          <li>After uploading, you may edit the year or note and delete only photos you uploaded.</li>
+          <li>Photos are resized automatically before upload.</li>
+          <li><strong>Videos are limited to 60 seconds.</strong> MP4 is recommended.</li>
+          <li>After uploading, you may edit the year or note and delete only items you uploaded.</li>
         </ol>
       </div>
 
       <label class="upload-dropzone" for="photo-files">
         <span class="upload-icon">＋</span>
-        <strong>Select Photos</strong>
-        <span>JPEG, PNG, WebP or HEIC</span>
-        <input id="photo-files" type="file" accept="image/*,.heic,.heif" multiple />
+        <strong>Select Photos or Videos</strong>
+        <span>Photos: JPEG, PNG, WebP or HEIC · Videos: maximum 60 seconds</span>
+        <input id="photo-files" type="file" accept="image/*,video/mp4,video/quicktime,video/webm,.heic,.heif,.mp4,.mov,.webm,.m4v" multiple />
       </label>
 
       <div id="upload-preview-list" class="upload-preview-list" aria-live="polite"></div>
 
       <div class="upload-actions">
-        <p><strong>0 photos ready.</strong> Images will be resized before upload.</p>
-        <button class="button button-primary" type="button" id="preview-upload-button">Upload Photos</button>
+        <p><strong>0 items ready.</strong> Photos are resized automatically. Videos must be 60 seconds or shorter.</p>
+        <button class="button button-primary" type="button" id="preview-upload-button">Upload Photos & Videos</button>
       </div>
     </section>
   </main>

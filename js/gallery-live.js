@@ -14,8 +14,9 @@
     return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
   }
 
-  function photoCard(photo) {
-    const note = photo.caption || photo.family_member_name || 'Family photo';
+  function mediaCard(photo) {
+    const isVideo = String(photo.media_type || 'photo').toLowerCase() === 'video';
+    const note = photo.caption || photo.family_member_name || (isVideo ? 'Family video' : 'Family photo');
     const actions = photo.can_edit ? `
       <div class="photo-owner-actions">
         <button class="photo-edit-button live-photo-edit" type="button">Edit year or note</button>
@@ -26,11 +27,19 @@
         <label>Note<textarea rows="3">${escapeHtml(photo.caption || '')}</textarea></label>
         <div class="photo-edit-form-actions"><button class="photo-save-button live-photo-save" type="button">Save changes</button><button class="photo-cancel-button live-photo-cancel" type="button">Cancel</button></div>
       </form>` : '';
+
+    const media = isVideo
+      ? `<div class="photo-record-image photo-record-video"><video src="${escapeHtml(photo.image_url)}" controls playsinline preload="metadata"></video></div>`
+      : `<button class="photo-record-image live-lightbox-image" data-image="${escapeHtml(photo.image_url)}" data-caption="${escapeHtml(note)}"><img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(note)}" loading="lazy"></button>`;
+
+    const duration = isVideo && photo.duration_seconds
+      ? `<p class="photo-media-info">Video · ${Number(photo.duration_seconds)} sec</p>`
+      : '';
+
     return `<article class="photo-record-card live-photo-card" data-photo-id="${photo.photo_id}">
-      <button class="photo-record-image live-lightbox-image" data-image="${escapeHtml(photo.image_url)}" data-caption="${escapeHtml(note)}">
-        <img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(note)}" loading="lazy">
-      </button>
+      ${media}
       <div class="photo-record-body">
+        ${duration}
         <p class="photo-note">${escapeHtml(note)}</p>
         ${photo.family_member_name ? `<p class="photo-family-member">${escapeHtml(photo.family_member_name)}</p>` : ''}
         <p class="photo-uploader">Uploaded by <strong>${escapeHtml(photo.uploaded_by)}</strong></p>
@@ -47,7 +56,7 @@
       body: body ? JSON.stringify(body) : undefined
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || 'Photo request failed.');
+    if (!response.ok) throw new Error(data.error || 'Media request failed.');
     return data;
   }
 
@@ -85,7 +94,7 @@
         } catch (error) { alert(error.message); }
       });
       del?.addEventListener('click', async () => {
-        if (!confirm('Delete this photo?')) return;
+        if (!confirm('Delete this photo or video?')) return;
         try {
           await api('DELETE', { photo_id: Number(card.dataset.photoId) });
           card.remove();
@@ -104,26 +113,26 @@
     const target = isBefore ? document.getElementById('gallery-before-1980') : document.getElementById('gallery-default');
     if (!target) return;
 
-    let liveSection = document.createElement('div');
+    const liveSection = document.createElement('div');
     liveSection.className = 'photo-card-grid live-photo-grid';
     target.insertAdjacentElement('afterend', liveSection);
 
     try {
       const response = await fetch(`/api/photos?year=${encodeURIComponent(apiYear)}`, { credentials:'same-origin' });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Unable to load photos.');
+      if (!response.ok) throw new Error(data.error || 'Unable to load photos and videos.');
       const is2026 = String(rawYear) === '2026';
       if (!isBefore && !is2026) target.hidden = true;
       if (!data.photos.length) {
         if (isBefore || is2026) {
           liveSection.remove();
         } else {
-          liveSection.innerHTML = '<p class="archive-note">No uploaded photos for this year yet.</p>';
+          liveSection.innerHTML = '<p class="archive-note">No uploaded photos or videos for this year yet.</p>';
         }
         return;
       }
 
-      liveSection.innerHTML = data.photos.map(photoCard).join('');
+      liveSection.innerHTML = data.photos.map(mediaCard).join('');
       wireLightbox(liveSection);
       wireActions(liveSection);
     } catch (error) {

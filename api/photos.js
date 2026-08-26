@@ -32,7 +32,7 @@ module.exports = async function handler(req, res) {
 
       const [rows] = await db.execute(
         `SELECT p.photo_id, p.filename, p.image_url, p.photo_year, p.caption,
-                p.family_member_name, p.uploaded_at, p.uploaded_by_user_id,
+                p.family_member_name, p.media_type, p.duration_seconds, p.uploaded_at, p.uploaded_by_user_id,
                 COALESCE(u.display_name, u.username, 'Family member') AS uploaded_by
          FROM vera_photos p
          LEFT JOIN vera_users u ON u.user_id = p.uploaded_by_user_id
