@@ -1,0 +1,22 @@
+VeraPachamanca photo upload is wired and ready for deployment.
+
+Flow:
+1. User enters family access code 1517.
+2. User logs in.
+3. User selects one or more photos on upload.html.
+4. Browser resizes each image to max 1600 pixels and sends it to /api/upload-photo.
+5. Vercel uploads the file by SFTP to GoDaddy.
+6. MySQL vera_photos stores the image URL and metadata.
+7. photos.html / gallery.html load uploaded photos from MySQL.
+
+GoDaddy remote folder:
+/home/fi4begjkbozm/public_html/truecontractingsolutions.app/images/veras
+
+Public URL format:
+https://truecontractingsolutions.app/images/veras/<image-name>
+
+No additional SQL changes are required for photo upload if vera_photos already exists from the current 5-table schema.
+
+Dependencies are pinned in package.json:
+mysql2 3.24.2
+ssh2-sftp-client 12.1.1

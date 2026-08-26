@@ -56,7 +56,7 @@
           <li>Select one or more photos.</li>
           <li>Choose <strong>Before 1980</strong> or a year from 1980 through the present for each image.</li>
           <li>Add an optional note.</li>
-          <li>The finished system will resize the images and create any missing year automatically.</li>
+          <li>Photos are resized automatically before they are uploaded.</li>
           <li>After uploading, you may edit the year or note and delete only photos you uploaded.</li>
         </ol>
       </div>
@@ -68,23 +68,10 @@
         <input id="photo-files" type="file" accept="image/*,.heic,.heif" multiple />
       </label>
 
-      <div id="upload-preview-list" class="upload-preview-list" aria-live="polite">
-        <article class="upload-preview-card demo-upload-card">
-          <div class="upload-preview-image"><img src="images/nextgen.jpg" alt="Sample selected photo" /></div>
-          <div class="upload-preview-fields">
-            <div class="upload-file-heading"><strong>family-photo-01.jpg</strong><span>Sample preview</span></div>
-            <label>Year
-              <select class="photo-year-select"></select>
-            </label>
-            <label>Optional note
-              <textarea rows="3" placeholder="Add a short note about this photo">Our next generation carrying the Peruvian flag.</textarea>
-            </label>
-          </div>
-        </article>
-      </div>
+      <div id="upload-preview-list" class="upload-preview-list" aria-live="polite"></div>
 
       <div class="upload-actions">
-        <p><strong>1 photo ready.</strong> A new year will be created automatically if it does not already exist.</p>
+        <p><strong>0 photos ready.</strong> Images will be resized before upload.</p>
         <button class="button button-primary" type="button" id="preview-upload-button">Upload Photos</button>
       </div>
     </section>
@@ -93,5 +80,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
   <script src="js/main.js"></script>
   <script src="js/require-login.js"></script>
+  <script src="js/upload.js"></script>
 </body>
 </html>

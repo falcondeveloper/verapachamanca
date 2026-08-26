@@ -21,18 +21,18 @@
     <section class="login-message">
       <p class="eyebrow">Private family area</p>
       <h1>Family Login</h1>
-      <p>You only need to log in if you want to upload or manage family photos. The rest of the reunion website does not require a user account.</p>
+      <p>You only need to identify yourself if you want to upload or manage family photos. The rest of the reunion website does not require a user account.</p>
       <div class="login-note">
-        <strong>Password changes</strong>
-        <span>Users cannot change their own password. Email Clark if you need your password changed.</span>
+        <strong>Simple family access</strong>
+        <span>Select your name from the family list. No username or password is required.</span>
       </div>
     </section>
 
     <section class="login-card">
       <div class="login-card-heading">
         <span class="brand-mark">VP</span>
-        <h2>Login</h2>
-        <p>Use the username and password assigned to you.</p>
+        <h2>Select Your Name</h2>
+        <p>The list is loaded directly from the family database.</p>
       </div>
 
       <div id="already-logged-in" class="session-status" hidden>
@@ -44,17 +44,16 @@
       </div>
 
       <form id="family-login-form">
-        <label>Username
-          <input id="login-username" name="username" type="text" autocomplete="username" required />
+        <label>Your name
+          <select id="login-user" name="user_id" required>
+            <option value="">Loading family members...</option>
+          </select>
         </label>
-        <label>Password
-          <input id="login-password" name="password" type="password" autocomplete="current-password" required />
-        </label>
-        <button class="button button-primary full-width" type="submit">Login</button>
+        <button class="button button-primary full-width" type="submit">Continue</button>
         <p id="login-error" class="form-error" role="alert" hidden></p>
       </form>
 
-      <p class="login-help">There is no password-reset or password-change page. Contact Clark if you need help with your password.</p>
+      <p class="login-help">If your name is missing from the list, ask Clark to add you to the family database.</p>
     </section>
   </main>
 

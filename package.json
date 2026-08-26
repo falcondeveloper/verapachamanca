@@ -8,6 +8,7 @@
     "node": "22.x"
   },
   "dependencies": {
-    "mysql2": "3.24.2"
+    "mysql2": "3.24.2",
+    "ssh2-sftp-client": "12.1.1"
   }
 }

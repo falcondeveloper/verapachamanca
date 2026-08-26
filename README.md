@@ -28,17 +28,16 @@ After the correct code is entered, the browser keeps a one-year cookie named:
 
 This family code is a simple privacy gate, not high-security authentication.
 
-## User login
+## User identification
 
-User accounts are stored in `vera_users`.
+Family members do not type a username or password.
 
-- Admin creates accounts.
-- Passwords are stored in `password_text` as required by this project.
-- Users can login and logout.
-- Users cannot register.
-- Users cannot change/reset their own password.
-- Password changes are handled manually by Clark.
-- `vera_sessions` keeps users logged in with no normal expiration.
+- `login.html` loads all active rows from `vera_users`.
+- The visitor selects their name from a dropdown.
+- `/api/login` creates a persistent row in `vera_sessions`.
+- The session remains active until logout, manual revocation, account disablement, or browser cookie removal.
+- Adding/removing/disabling users in MySQL automatically changes the dropdown; no website recoding is required.
+- `password_text` is now legacy/optional and is not read by the website.
 
 ## Volunteers
 
@@ -55,23 +54,15 @@ Volunteer records are stored in `vera_event_volunteers`.
 
 Run `database/02_LOAD_2026_EVENTS_MYSQL.sql` once so the volunteer page has the current 2026 events to choose from.
 
-## Vercel environment variables
+## Server connection settings
 
-Add these in Vercel Project Settings → Environment Variables:
-
-- `MYSQL_HOST`
-- `MYSQL_PORT`
-- `MYSQL_DATABASE`
-- `MYSQL_USER`
-- `MYSQL_PASSWORD`
-- `SITE_ACCESS_CODE` = `1517`
-
-Do not put the MySQL password in browser JavaScript or GitHub source.
+This project intentionally stores the GoDaddy MySQL/SFTP settings in `lib/credentials.js` per the project owner's instruction.
 
 ## API routes
 
 - `/api/health` — test MySQL connection
-- `/api/login` — login
+- `/api/users` — active family-member dropdown list
+- `/api/login` — select a family member and create a persistent session
 - `/api/session` — current logged-in user
 - `/api/logout` — logout
 - `/api/events` — active events
