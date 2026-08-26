@@ -1,9 +1,10 @@
 (() => {
   const currentYear = new Date().getFullYear();
   const selectedFiles = [];
-  const MAX_VIDEO_SECONDS = 60;
+  const MAX_VIDEO_SECONDS = 120;
   const MAX_VIDEO_BYTES = 150 * 1024 * 1024;
-  const VIDEO_CHUNK_BYTES = 2 * 1024 * 1024;
+  const MAX_PHOTO_BYTES = 30 * 1024 * 1024;
+  const CHUNK_BYTES = 2 * 1024 * 1024;
 
   function yearOptions(selected = String(currentYear)) {
     const items = ['<option value="before-1980">Before 1980</option>'];
@@ -13,106 +14,39 @@
     return items.join('');
   }
 
+  function fileExtension(file) {
+    return (file.name.split('.').pop() || '').toLowerCase();
+  }
+
   function isVideoFile(file) {
     return file.type.startsWith('video/') || /\.(mp4|mov|webm|m4v)$/i.test(file.name);
   }
 
   function isPhotoFile(file) {
-    return file.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|heic|heif)$/i.test(file.name);
+    return /^(image\/jpeg|image\/png|image\/webp)$/i.test(file.type) || /\.(jpg|jpeg|png|webp)$/i.test(file.name);
   }
 
   function updateReadyText() {
     const count = selectedFiles.length;
     const target = document.querySelector('.upload-actions p');
     if (target) {
-      target.innerHTML = `<strong>${count} item${count === 1 ? '' : 's'} ready.</strong> Photos are resized automatically. Videos must be 60 seconds or shorter.`;
+      target.innerHTML = `<strong>${count} item${count === 1 ? '' : 's'} ready.</strong> Photos upload as selected. Videos must be 60 seconds or shorter.`;
     }
   }
 
-  function loadWithImageElement(file) {
-    return new Promise((resolve, reject) => {
-      const url = URL.createObjectURL(file);
-      const image = new Image();
-      image.onload = () => resolve({ source: image, objectUrl: url });
-      image.onerror = () => {
-        URL.revokeObjectURL(url);
-        reject(new Error('image-element-failed'));
-      };
-      image.src = url;
-    });
-  }
-
-  async function loadImageSource(file) {
+  async function blobToBase64(blob) {
     try {
-      return await loadWithImageElement(file);
-    } catch (_) {
-      // Android Chrome sometimes prefers createImageBitmap for certain files.
-    }
-
-    if ('createImageBitmap' in window) {
-      try {
-        const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-        return { source: bitmap, objectUrl: null };
-      } catch (_) {
-        try {
-          const bitmap = await createImageBitmap(file);
-          return { source: bitmap, objectUrl: null };
-        } catch (_) {
-          // Continue to friendly error below.
-        }
+      const buffer = await blob.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      const step = 0x8000;
+      for (let i = 0; i < bytes.length; i += step) {
+        binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + step, bytes.length)));
       }
+      return btoa(binary);
+    } catch (error) {
+      throw new Error('Unable to read the selected file. Please select it again and retry.');
     }
-
-    const ext = (file.name.split('.').pop() || '').toLowerCase();
-    if (ext === 'heic' || ext === 'heif' || file.type === 'image/heic' || file.type === 'image/heif') {
-      throw new Error('This HEIC/HEIF photo cannot be opened by this browser. Please choose a JPEG, PNG, or WebP photo.');
-    }
-    throw new Error('This photo could not be opened by the browser. Please try another copy of the photo.');
-  }
-
-  function canvasToBlob(canvas, quality) {
-    return new Promise((resolve, reject) => {
-      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Unable to resize image.')), 'image/jpeg', quality);
-    });
-  }
-
-  async function resizePhoto(file) {
-    const loaded = await loadImageSource(file);
-    const source = loaded.source;
-    const sourceWidth = source.width || source.naturalWidth;
-    const sourceHeight = source.height || source.naturalHeight;
-    const maxDimension = 1600;
-    const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
-    const width = Math.max(1, Math.round(sourceWidth * scale));
-    const height = Math.max(1, Math.round(sourceHeight * scale));
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, width, height);
-    ctx.drawImage(source, 0, 0, width, height);
-    if (source.close) source.close();
-    if (loaded.objectUrl) URL.revokeObjectURL(loaded.objectUrl);
-
-    let quality = 0.82;
-    let blob = await canvasToBlob(canvas, quality);
-    while (blob.size > 1400000 && quality > 0.52) {
-      quality -= 0.08;
-      blob = await canvasToBlob(canvas, quality);
-    }
-    if (blob.size > 1900000) throw new Error('This photo is still too large after resizing. Try a smaller image.');
-    return blob;
-  }
-
-  function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result).split(',')[1]);
-      reader.onerror = () => reject(new Error('Unable to read the selected file.'));
-      reader.readAsDataURL(blob);
-    });
   }
 
   function getVideoDuration(file) {
@@ -123,6 +57,8 @@
       video.onloadedmetadata = () => {
         const duration = Number(video.duration);
         URL.revokeObjectURL(url);
+        video.removeAttribute('src');
+        video.load();
         if (!Number.isFinite(duration) || duration <= 0) {
           reject(new Error('The video length could not be read. Please choose another video.'));
           return;
@@ -149,78 +85,80 @@
     return data;
   }
 
-  async function uploadPhoto(entry, meta, status) {
-    status.textContent = 'Resizing photo...';
-    const resized = await resizePhoto(entry.file);
-    const imageBase64 = await blobToBase64(resized);
-    status.textContent = 'Uploading photo...';
-    return postUpload({
-      mediaType: 'photo',
-      imageBase64,
-      mimeType: 'image/jpeg',
-      photoYear: meta.year,
-      caption: meta.caption,
-      familyMemberName: meta.familyMemberName
-    });
-  }
-
-  async function uploadVideo(entry, meta, status) {
+  async function uploadChunked(entry, meta, status) {
     const file = entry.file;
-    const duration = entry.durationSeconds || await getVideoDuration(file);
-    if (duration > MAX_VIDEO_SECONDS) {
+    const isVideo = entry.mediaType === 'video';
+    const maxBytes = isVideo ? MAX_VIDEO_BYTES : MAX_PHOTO_BYTES;
+
+    if (file.size > maxBytes) {
+      throw new Error(isVideo
+        ? 'This video file is too large. Please choose a video under 150 MB.'
+        : 'This photo file is too large. Please choose a photo under 30 MB.');
+    }
+
+    if (isVideo && entry.durationSeconds > MAX_VIDEO_SECONDS) {
       throw new Error(`Videos are limited to ${MAX_VIDEO_SECONDS} seconds.`);
     }
-    if (file.size > MAX_VIDEO_BYTES) {
-      throw new Error('This video file is too large. Please choose a video under 150 MB.');
-    }
 
-    status.textContent = 'Preparing video upload...';
+    status.textContent = isVideo ? 'Preparing video upload...' : 'Preparing photo upload...';
     const start = await postUpload({
-      action: 'video-start',
-      mediaType: 'video',
+      action: `${entry.mediaType}-start`,
+      mediaType: entry.mediaType,
       originalName: file.name,
       mimeType: file.type,
-      durationSeconds: duration,
+      durationSeconds: isVideo ? entry.durationSeconds : null,
       totalBytes: file.size
     });
     const filename = start.filename;
 
     try {
-      for (let offset = 0; offset < file.size; offset += VIDEO_CHUNK_BYTES) {
-        const end = Math.min(file.size, offset + VIDEO_CHUNK_BYTES);
+      for (let offset = 0; offset < file.size; offset += CHUNK_BYTES) {
+        const end = Math.min(file.size, offset + CHUNK_BYTES);
         const chunk = file.slice(offset, end);
         const chunkBase64 = await blobToBase64(chunk);
         const percent = Math.round((end / file.size) * 100);
-        status.textContent = `Uploading video... ${percent}%`;
+        status.textContent = `Uploading ${entry.mediaType}... ${percent}%`;
         await postUpload({
-          action: 'video-chunk',
-          mediaType: 'video',
+          action: `${entry.mediaType}-chunk`,
+          mediaType: entry.mediaType,
           filename,
           offset,
           chunkBase64
         });
       }
 
-      status.textContent = 'Finishing video upload...';
+      status.textContent = `Finishing ${entry.mediaType} upload...`;
       return await postUpload({
-        action: 'video-finish',
-        mediaType: 'video',
+        action: `${entry.mediaType}-finish`,
+        mediaType: entry.mediaType,
         filename,
         photoYear: meta.year,
         caption: meta.caption,
         familyMemberName: meta.familyMemberName,
-        durationSeconds: Math.ceil(duration),
+        durationSeconds: isVideo ? Math.ceil(entry.durationSeconds) : null,
         totalBytes: file.size
       });
     } catch (error) {
-      await postUpload({ action: 'video-abort', mediaType: 'video', filename }).catch(() => {});
+      await postUpload({
+        action: `${entry.mediaType}-abort`,
+        mediaType: entry.mediaType,
+        filename
+      }).catch(() => {});
       throw error;
     }
   }
 
   async function addFile(file) {
     const mediaType = isVideoFile(file) ? 'video' : (isPhotoFile(file) ? 'photo' : null);
-    if (!mediaType) return;
+    if (!mediaType) {
+      alert(`${file.name}: Please use JPEG, PNG, WebP, MP4, MOV, WebM, or M4V.`);
+      return;
+    }
+
+    if (mediaType === 'photo' && file.size > MAX_PHOTO_BYTES) {
+      alert(`${file.name}: photo files must be under 30 MB.`);
+      return;
+    }
 
     let durationSeconds = null;
     if (mediaType === 'video') {
@@ -251,10 +189,10 @@
     card.dataset.objectUrl = objectUrl;
     const preview = mediaType === 'video'
       ? `<video src="${objectUrl}" controls muted playsinline preload="metadata"></video>`
-      : `<img src="${objectUrl}" alt="Preview of selected photo">`;
+      : `<img src="${objectUrl}" alt="Preview of selected photo" onerror="this.style.display='none'; this.parentElement.classList.add('preview-unavailable');">`;
     const mediaLabel = mediaType === 'video'
       ? `Video · ${Math.ceil(durationSeconds)} sec`
-      : 'Photo';
+      : `Photo · ${Math.max(1, Math.round(file.size / 1024 / 1024))} MB`;
 
     card.innerHTML = `
       <div class="upload-preview-image">${preview}</div>
@@ -266,6 +204,7 @@
         <label class="upload-note-label">Optional note<textarea rows="3" placeholder="Add a short note about this ${mediaType}"></textarea></label>
         <div class="upload-item-status" aria-live="polite"></div>
       </div>`;
+
     card.querySelector('.upload-file-heading strong').textContent = file.name;
     card.querySelector('.upload-remove').addEventListener('click', () => {
       const index = selectedFiles.findIndex(item => item.id === id);
@@ -316,15 +255,15 @@
 
         try {
           status.className = 'upload-item-status working';
-          if (entry.mediaType === 'video') {
-            await uploadVideo(entry, meta, status);
-          } else {
-            await uploadPhoto(entry, meta, status);
-          }
+          await uploadChunked(entry, meta, status);
           uploaded += 1;
           status.textContent = 'Uploaded successfully.';
           status.className = 'upload-item-status success';
           card.classList.add('upload-complete');
+          if (card.dataset.objectUrl) {
+            URL.revokeObjectURL(card.dataset.objectUrl);
+            delete card.dataset.objectUrl;
+          }
         } catch (error) {
           failed += 1;
           status.textContent = error.message || 'Upload failed.';
