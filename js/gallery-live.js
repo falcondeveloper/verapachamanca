@@ -61,6 +61,36 @@
     return data;
   }
 
+
+  const videoObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          if (!entry.isIntersecting || entry.intersectionRatio < 0.25) {
+            if (!video.paused) video.pause();
+          }
+        });
+      }, { threshold: [0, 0.25] })
+    : null;
+
+  function wireVideoAutoPause(container = document) {
+    const videos = Array.from(container.querySelectorAll('video'));
+    videos.forEach(video => {
+      if (video.dataset.autoPauseWired === '1') return;
+      video.dataset.autoPauseWired = '1';
+
+      // Pause this video once the user scrolls past it.
+      videoObserver?.observe(video);
+
+      // Keep only one video playing at a time.
+      video.addEventListener('play', () => {
+        document.querySelectorAll('video').forEach(other => {
+          if (other !== video && !other.paused) other.pause();
+        });
+      });
+    });
+  }
+
   function wireLightbox(container) {
     const lightbox = document.querySelector('.lightbox');
     const imageTarget = document.querySelector('.lightbox-image');
@@ -178,6 +208,11 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
+    wireVideoAutoPause(document);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) document.querySelectorAll('video').forEach(video => video.pause());
+    });
+
     const yearLabel = document.getElementById('gallery-year');
     if (!yearLabel) return;
     const rawYear = new URLSearchParams(window.location.search).get('year') || String(currentYear);
@@ -216,6 +251,7 @@
       wireLightbox(liveSection);
       wireActions(liveSection);
       wireSorting(liveSection, apiYear, sortStatus);
+      wireVideoAutoPause(liveSection);
     } catch (error) {
       liveSection.innerHTML = `<p class="archive-note">${escapeHtml(error.message)}</p>`;
     }
