@@ -9,9 +9,7 @@
       const data = await response.json();
       if (!response.ok || !data.photos.length) return;
 
-      const groups = new Map([
-        ['before-1980', { count: 20, image: 'images/pre1980/01-04aa.jpg' }]
-      ]);
+      const groups = new Map();
       for (const media of data.photos) {
         const key = Number(media.photo_year) === 0 ? 'before-1980' : String(media.photo_year);
         if (!groups.has(key)) groups.set(key, { count: 0, image: null });

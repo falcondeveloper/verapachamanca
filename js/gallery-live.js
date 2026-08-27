@@ -300,8 +300,9 @@
     const normalized = rawYear.toLowerCase().replace(/[_\s]+/g, '-');
     const isBefore = ['before-1980','pre-1980','before1980','pre1980'].includes(normalized);
     const apiYear = isBefore ? 'before-1980' : rawYear;
-    const target = isBefore ? document.getElementById('gallery-before-1980') : document.getElementById('gallery-default');
+    const target = document.getElementById('gallery-default');
     if (!target) return;
+    yearLabel.textContent = isBefore ? 'Before 1980' : rawYear;
 
     const canSort = desktopSortingEnabled();
     const sortStatus = canSort ? document.createElement('p') : null;
@@ -320,14 +321,9 @@
       const response = await fetch(`/api/photos?year=${encodeURIComponent(apiYear)}`, { credentials:'same-origin' });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Unable to load photos and videos.');
-      if (!isBefore) target.hidden = true;
+      target.hidden = true;
       if (!data.photos.length) {
-        if (isBefore) {
-          liveSection.remove();
-          sortStatus?.remove();
-        } else {
-          liveSection.innerHTML = '<p class="archive-note">No uploaded photos or videos for this year yet.</p>';
-        }
+        liveSection.innerHTML = '<p class="archive-note">No uploaded photos or videos for this year yet.</p>';
         return;
       }
 
