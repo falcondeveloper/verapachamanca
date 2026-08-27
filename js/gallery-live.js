@@ -136,15 +136,51 @@
 
   function wireSorting(container, apiYear, status) {
     let draggedCard = null;
-    let activeHandle = null;
+    let activePointerId = null;
     let changed = false;
+    let saveTimer = null;
+    let saveChain = Promise.resolve();
+    let lastQueuedSignature = '';
 
-    async function saveOrder() {
-      if (!changed) return;
-      const photoIds = Array.from(container.querySelectorAll('.live-photo-card'))
+    function currentPhotoIds() {
+      return Array.from(container.querySelectorAll('.live-photo-card'))
         .map(card => Number(card.dataset.photoId));
-      status.textContent = 'Saving order...';
-      try {
+    }
+
+    function showToast(message, isError = false) {
+      let toast = document.getElementById('media-sort-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'media-sort-toast';
+        toast.style.position = 'fixed';
+        toast.style.left = '50%';
+        toast.style.bottom = '24px';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.zIndex = '9999';
+        toast.style.padding = '11px 16px';
+        toast.style.borderRadius = '999px';
+        toast.style.fontWeight = '700';
+        toast.style.fontSize = '14px';
+        toast.style.boxShadow = '0 6px 24px rgba(0,0,0,.25)';
+        document.body.appendChild(toast);
+      }
+      toast.style.background = isError ? '#8b1e1e' : '#143325';
+      toast.style.color = '#fff';
+      toast.textContent = message;
+      toast.hidden = false;
+      clearTimeout(toast._hideTimer);
+      toast._hideTimer = setTimeout(() => { toast.hidden = true; }, isError ? 5000 : 1800);
+    }
+
+    function queueSave(showConfirmation = false) {
+      const photoIds = currentPhotoIds();
+      const signature = photoIds.join(',');
+      if (!photoIds.length) return saveChain;
+      if (signature === lastQueuedSignature && !showConfirmation) return saveChain;
+      lastQueuedSignature = signature;
+
+      saveChain = saveChain.then(async () => {
+        status.textContent = 'Saving order...';
         const result = await api('POST', {
           action: 'reorder',
           photoYear: apiYear,
@@ -153,15 +189,27 @@
 
         const saved = Array.isArray(result.saved_order) ? result.saved_order.map(Number) : [];
         if (saved.length !== photoIds.length || saved.some((id, index) => id !== photoIds[index])) {
-          throw new Error('The database did not save the new order. Please try again.');
+          throw new Error('The database did not save the new order.');
         }
 
         status.textContent = 'Order saved to database.';
-        setTimeout(() => { status.textContent = 'Drag the Move handle to rearrange photos and videos. Changes save automatically.'; }, 1600);
-      } catch (error) {
-        alert(error.message);
-        window.location.reload();
-      }
+        showToast('Order saved');
+        setTimeout(() => {
+          status.textContent = 'Drag the Move handle to rearrange photos and videos. Changes save automatically.';
+        }, 1800);
+      }).catch(error => {
+        lastQueuedSignature = '';
+        status.textContent = 'Order was NOT saved.';
+        showToast(error.message || 'Order was not saved', true);
+        alert(error.message || 'Order was not saved.');
+      });
+
+      return saveChain;
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => queueSave(false), 450);
     }
 
     function findTargetCard(x, y) {
@@ -173,48 +221,60 @@
       }) || null;
     }
 
+    function onPointerMove(event) {
+      if (!draggedCard || event.pointerId !== activePointerId) return;
+      event.preventDefault();
+      const target = findTargetCard(event.clientX, event.clientY);
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      const before = event.clientY < rect.top + rect.height / 2 ||
+        (Math.abs(event.clientY - (rect.top + rect.height / 2)) < rect.height * 0.22 &&
+         event.clientX < rect.left + rect.width / 2);
+      const reference = before ? target : target.nextElementSibling;
+
+      if (reference !== draggedCard) {
+        container.insertBefore(draggedCard, reference);
+        changed = true;
+        scheduleSave();
+      }
+    }
+
+    function finishSort(event) {
+      if (!draggedCard) return;
+      if (event && activePointerId !== null && event.pointerId !== activePointerId) return;
+      event?.preventDefault?.();
+
+      clearTimeout(saveTimer);
+      draggedCard.classList.remove('is-being-sorted');
+      document.body.classList.remove('media-sort-active');
+      draggedCard = null;
+      activePointerId = null;
+
+      if (changed) {
+        changed = false;
+        queueSave(true);
+      }
+    }
+
     container.querySelectorAll('.photo-sort-handle').forEach(handle => {
       handle.addEventListener('pointerdown', event => {
         if (event.pointerType === 'mouse' && event.button !== 0) return;
         event.preventDefault();
         draggedCard = handle.closest('.live-photo-card');
-        activeHandle = handle;
+        activePointerId = event.pointerId;
         changed = false;
         draggedCard.classList.add('is-being-sorted');
         document.body.classList.add('media-sort-active');
-        handle.setPointerCapture?.(event.pointerId);
       });
-
-      handle.addEventListener('pointermove', event => {
-        if (!draggedCard || activeHandle !== handle) return;
-        event.preventDefault();
-        const target = findTargetCard(event.clientX, event.clientY);
-        if (!target) return;
-        const rect = target.getBoundingClientRect();
-        const before = event.clientY < rect.top + rect.height / 2 ||
-          (Math.abs(event.clientY - (rect.top + rect.height / 2)) < rect.height * 0.22 &&
-           event.clientX < rect.left + rect.width / 2);
-        const reference = before ? target : target.nextElementSibling;
-        if (reference !== draggedCard) {
-          container.insertBefore(draggedCard, reference);
-          changed = true;
-        }
-      });
-
-      const finish = async event => {
-        if (!draggedCard || activeHandle !== handle) return;
-        event.preventDefault();
-        try { handle.releasePointerCapture?.(event.pointerId); } catch (_) {}
-        draggedCard.classList.remove('is-being-sorted');
-        document.body.classList.remove('media-sort-active');
-        draggedCard = null;
-        activeHandle = null;
-        await saveOrder();
-      };
-
-      handle.addEventListener('pointerup', finish);
-      handle.addEventListener('pointercancel', finish);
     });
+
+    // Use document-level listeners so moving the card in the DOM cannot lose
+    // the pointer-up event on Android or desktop browsers.
+    document.addEventListener('pointermove', onPointerMove, { passive: false });
+    document.addEventListener('pointerup', finishSort, { passive: false });
+    document.addEventListener('pointercancel', finishSort, { passive: false });
+    window.addEventListener('blur', () => finishSort());
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
