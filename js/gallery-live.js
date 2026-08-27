@@ -145,8 +145,18 @@
         .map(card => Number(card.dataset.photoId));
       status.textContent = 'Saving order...';
       try {
-        await api('PUT', { photoYear: apiYear, photo_ids: photoIds });
-        status.textContent = 'Order saved.';
+        const result = await api('POST', {
+          action: 'reorder',
+          photoYear: apiYear,
+          photo_ids: photoIds
+        });
+
+        const saved = Array.isArray(result.saved_order) ? result.saved_order.map(Number) : [];
+        if (saved.length !== photoIds.length || saved.some((id, index) => id !== photoIds[index])) {
+          throw new Error('The database did not save the new order. Please try again.');
+        }
+
+        status.textContent = 'Order saved to database.';
         setTimeout(() => { status.textContent = 'Drag the Move handle to rearrange photos and videos. Changes save automatically.'; }, 1600);
       } catch (error) {
         alert(error.message);

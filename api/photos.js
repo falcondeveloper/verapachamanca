@@ -10,6 +10,58 @@ function parseYear(value) {
   return year;
 }
 
+
+async function saveMediaOrder(db, photoYear, photoIds) {
+  if (photoYear === null || !photoIds.length || photoIds.length !== new Set(photoIds).size) {
+    const error = new Error('Invalid media order.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const [rows] = await db.execute(
+    `SELECT photo_id
+     FROM vera_photos
+     WHERE photo_year = ? AND is_active = 1
+     ORDER BY photo_id`,
+    [photoYear]
+  );
+
+  const expected = rows.map(row => Number(row.photo_id)).sort((a, b) => a - b);
+  const received = [...photoIds].sort((a, b) => a - b);
+
+  if (expected.length !== received.length || expected.some((id, index) => id !== received[index])) {
+    const error = new Error('The gallery changed. Refresh the page and try sorting again.');
+    error.statusCode = 409;
+    throw error;
+  }
+
+  await db.beginTransaction();
+  try {
+    for (let index = 0; index < photoIds.length; index += 1) {
+      await db.execute(
+        `UPDATE vera_photos
+         SET order_id = ?
+         WHERE photo_id = ? AND photo_year = ? AND is_active = 1`,
+        [index + 1, photoIds[index], photoYear]
+      );
+    }
+    await db.commit();
+  } catch (error) {
+    await db.rollback().catch(() => {});
+    throw error;
+  }
+
+  const [savedRows] = await db.execute(
+    `SELECT photo_id, order_id
+     FROM vera_photos
+     WHERE photo_year = ? AND is_active = 1
+     ORDER BY order_id ASC, photo_id ASC`,
+    [photoYear]
+  );
+
+  return savedRows.map(row => Number(row.photo_id));
+}
+
 module.exports = async function handler(req, res) {
   setNoStore(res);
   if (!requireSiteAccess(req, res)) return;
@@ -52,6 +104,28 @@ module.exports = async function handler(req, res) {
           can_edit: Boolean(user && (user.is_admin || Number(user.user_id) === Number(row.uploaded_by_user_id)))
         }))
       });
+    }
+
+
+    if (req.method === 'POST') {
+      const body = getJsonBody(req);
+      if (String(body.action || '') !== 'reorder') {
+        return res.status(400).json({ error: 'Invalid photo action.' });
+      }
+
+      const photoYear = parseYear(body.photoYear);
+      const photoIds = Array.isArray(body.photo_ids)
+        ? body.photo_ids.map(Number).filter(id => Number.isInteger(id) && id > 0)
+        : [];
+
+      try {
+        const savedOrder = await saveMediaOrder(db, photoYear, photoIds);
+        return res.status(200).json({ ok: true, saved_order: savedOrder });
+      } catch (error) {
+        return res.status(error.statusCode || 500).json({
+          error: error.message || 'Unable to save media order.'
+        });
+      }
     }
 
     if (req.method === 'PATCH') {
@@ -98,35 +172,14 @@ module.exports = async function handler(req, res) {
         ? body.photo_ids.map(Number).filter(id => Number.isInteger(id) && id > 0)
         : [];
 
-      if (photoYear === null || !photoIds.length || photoIds.length !== new Set(photoIds).size) {
-        return res.status(400).json({ error: 'Invalid media order.' });
-      }
-
-      const [rows] = await db.execute(
-        `SELECT photo_id FROM vera_photos WHERE photo_year = ? AND is_active = 1 ORDER BY photo_id`,
-        [photoYear]
-      );
-      const expected = rows.map(row => Number(row.photo_id)).sort((a, b) => a - b);
-      const received = [...photoIds].sort((a, b) => a - b);
-      if (expected.length !== received.length || expected.some((id, index) => id !== received[index])) {
-        return res.status(409).json({ error: 'The gallery changed. Refresh the page and try sorting again.' });
-      }
-
-      await db.beginTransaction();
       try {
-        for (let index = 0; index < photoIds.length; index += 1) {
-          await db.execute(
-            'UPDATE vera_photos SET order_id = ? WHERE photo_id = ? AND photo_year = ?',
-            [index + 1, photoIds[index], photoYear]
-          );
-        }
-        await db.commit();
+        const savedOrder = await saveMediaOrder(db, photoYear, photoIds);
+        return res.status(200).json({ ok: true, saved_order: savedOrder });
       } catch (error) {
-        await db.rollback().catch(() => {});
-        throw error;
+        return res.status(error.statusCode || 500).json({
+          error: error.message || 'Unable to save media order.'
+        });
       }
-
-      return res.status(200).json({ ok: true });
     }
 
     if (req.method === 'DELETE') {
@@ -155,7 +208,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
-    res.setHeader('Allow', 'GET, PATCH, PUT, DELETE');
+    res.setHeader('Allow', 'GET, POST, PATCH, PUT, DELETE');
     return res.status(405).json({ error: 'Method not allowed.' });
   } catch (error) {
     console.error('Photos API error:', error);
