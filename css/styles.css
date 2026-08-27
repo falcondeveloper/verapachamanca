@@ -790,3 +790,17 @@ body.media-sort-active { overscroll-behavior: contain; }
 @media (min-width: 1900px) {
   .photo-card-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 12px; }
 }
+
+
+/* Media reordering is desktop-only. Keep mobile/tablet gallery view-only. */
+@media (max-width: 900px) {
+  .photo-sort-handle,
+  .photo-sort-status {
+    display: none !important;
+  }
+
+  .live-photo-card,
+  .photo-record-card {
+    touch-action: pan-y;
+  }
+}

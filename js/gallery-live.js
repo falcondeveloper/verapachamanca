@@ -1,6 +1,10 @@
 (() => {
   const currentYear = new Date().getFullYear();
 
+  function desktopSortingEnabled() {
+    return window.matchMedia('(min-width: 901px)').matches;
+  }
+
   function yearOptions(selected) {
     const selectedValue = Number(selected) === 0 ? 'before-1980' : String(selected || currentYear);
     const items = [`<option value="before-1980"${selectedValue === 'before-1980' ? ' selected' : ''}>Before 1980</option>`];
@@ -36,8 +40,12 @@
       ? `<p class="photo-media-info">Video · ${Number(photo.duration_seconds)} sec</p>`
       : '';
 
+    const sortHandle = desktopSortingEnabled()
+      ? '<button class="photo-sort-handle" type="button" aria-label="Move this photo or video">☰ Move</button>'
+      : '';
+
     return `<article class="photo-record-card live-photo-card" data-photo-id="${photo.photo_id}">
-      <button class="photo-sort-handle" type="button" aria-label="Move this photo or video">☰ Move</button>
+      ${sortHandle}
       ${media}
       <div class="photo-record-body">
         ${duration}
@@ -135,6 +143,8 @@
   }
 
   function wireSorting(container, apiYear, status) {
+    if (!desktopSortingEnabled()) return;
+
     let draggedCard = null;
     let activePointerId = null;
     let changed = false;
@@ -259,6 +269,7 @@
 
     container.querySelectorAll('.photo-sort-handle').forEach(handle => {
       handle.addEventListener('pointerdown', event => {
+        if (!desktopSortingEnabled()) return;
         if (event.pointerType === 'mouse' && event.button !== 0) return;
         event.preventDefault();
         draggedCard = handle.closest('.live-photo-card');
@@ -292,14 +303,18 @@
     const target = isBefore ? document.getElementById('gallery-before-1980') : document.getElementById('gallery-default');
     if (!target) return;
 
-    const sortStatus = document.createElement('p');
-    sortStatus.className = 'photo-sort-status';
-    sortStatus.textContent = 'Drag the Move handle to rearrange photos and videos. Changes save automatically.';
-    target.insertAdjacentElement('afterend', sortStatus);
+    const canSort = desktopSortingEnabled();
+    const sortStatus = canSort ? document.createElement('p') : null;
+    if (sortStatus) {
+      sortStatus.className = 'photo-sort-status';
+      sortStatus.textContent = 'Drag the Move handle to rearrange photos and videos. Changes save automatically.';
+      target.insertAdjacentElement('afterend', sortStatus);
+    }
 
     const liveSection = document.createElement('div');
     liveSection.className = 'photo-card-grid live-photo-grid';
-    sortStatus.insertAdjacentElement('afterend', liveSection);
+    if (sortStatus) sortStatus.insertAdjacentElement('afterend', liveSection);
+    else target.insertAdjacentElement('afterend', liveSection);
 
     try {
       const response = await fetch(`/api/photos?year=${encodeURIComponent(apiYear)}`, { credentials:'same-origin' });
@@ -309,7 +324,7 @@
       if (!data.photos.length) {
         if (isBefore) {
           liveSection.remove();
-          sortStatus.remove();
+          sortStatus?.remove();
         } else {
           liveSection.innerHTML = '<p class="archive-note">No uploaded photos or videos for this year yet.</p>';
         }
@@ -319,7 +334,7 @@
       liveSection.innerHTML = data.photos.map(mediaCard).join('');
       wireLightbox(liveSection);
       wireActions(liveSection);
-      wireSorting(liveSection, apiYear, sortStatus);
+      if (canSort && sortStatus) wireSorting(liveSection, apiYear, sortStatus);
       wireVideoAutoPause(liveSection);
     } catch (error) {
       liveSection.innerHTML = `<p class="archive-note">${escapeHtml(error.message)}</p>`;
