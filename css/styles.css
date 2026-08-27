@@ -763,3 +763,30 @@ body.media-sort-active { overscroll-behavior: contain; }
   .photo-sort-handle { min-height: 44px; padding: 10px 14px; }
   .photo-sort-status { font-size: 13px; }
 }
+
+
+/* Desktop gallery density: automatically 3 to 10 items across as the browser is resized */
+@media (min-width: 901px) {
+  .photo-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+}
+@media (min-width: 1050px) {
+  .photo-card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1200px) {
+  .photo-card-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+}
+@media (min-width: 1350px) {
+  .photo-card-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 15px; }
+}
+@media (min-width: 1500px) {
+  .photo-card-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }
+}
+@media (min-width: 1650px) {
+  .photo-card-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 13px; }
+}
+@media (min-width: 1775px) {
+  .photo-card-grid { grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 12px; }
+}
+@media (min-width: 1900px) {
+  .photo-card-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 12px; }
+}
