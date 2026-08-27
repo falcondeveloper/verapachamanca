@@ -34,20 +34,6 @@
     }
   }
 
-  async function blobToBase64(blob) {
-    try {
-      const buffer = await blob.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      const step = 0x8000;
-      for (let i = 0; i < bytes.length; i += step) {
-        binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + step, bytes.length)));
-      }
-      return btoa(binary);
-    } catch (error) {
-      throw new Error('Unable to read the selected file. Please select it again and retry.');
-    }
-  }
 
   function getVideoDuration(file) {
     return new Promise((resolve, reject) => {
@@ -85,6 +71,32 @@
     return data;
   }
 
+
+  async function postBinaryChunk(mediaType, filename, offset, chunk) {
+    const params = new URLSearchParams({
+      action: `${mediaType}-chunk`,
+      mediaType,
+      filename,
+      offset: String(offset)
+    });
+
+    let response;
+    try {
+      response = await fetch(`/api/upload-photo?${params.toString()}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/octet-stream' },
+        body: chunk
+      });
+    } catch (error) {
+      throw new Error('Upload connection failed. Please retry this item.');
+    }
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'Upload chunk failed.');
+    return data;
+  }
+
   async function uploadChunked(entry, meta, status) {
     const file = entry.file;
     const isVideo = entry.mediaType === 'video';
@@ -115,16 +127,9 @@
       for (let offset = 0; offset < file.size; offset += CHUNK_BYTES) {
         const end = Math.min(file.size, offset + CHUNK_BYTES);
         const chunk = file.slice(offset, end);
-        const chunkBase64 = await blobToBase64(chunk);
         const percent = Math.round((end / file.size) * 100);
         status.textContent = `Uploading ${entry.mediaType}... ${percent}%`;
-        await postUpload({
-          action: `${entry.mediaType}-chunk`,
-          mediaType: entry.mediaType,
-          filename,
-          offset,
-          chunkBase64
-        });
+        await postBinaryChunk(entry.mediaType, filename, offset, chunk);
       }
 
       status.textContent = `Finishing ${entry.mediaType} upload...`;

@@ -127,9 +127,11 @@ module.exports = async function handler(req, res) {
     const user = await getLoggedInUser(req, db);
     if (!user) return res.status(401).json({ error: 'Please select your name before uploading.' });
 
-    const body = getJsonBody(req);
-    const action = String(body.action || '');
-    const mediaType = String(body.mediaType || '');
+    const contentType = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+    const isBinaryChunk = contentType === 'application/octet-stream';
+    const body = isBinaryChunk ? {} : getJsonBody(req);
+    const action = String(isBinaryChunk ? (req.query?.action || '') : (body.action || ''));
+    const mediaType = String(isBinaryChunk ? (req.query?.mediaType || '') : (body.mediaType || ''));
 
     if (!['photo', 'video'].includes(mediaType)) {
       return res.status(400).json({ error: 'Invalid media type.' });
@@ -159,12 +161,27 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === `${mediaType}-chunk`) {
-      const filename = String(body.filename || '');
+      let filename;
+      let offset;
+      let chunk;
+
+      if (isBinaryChunk) {
+        filename = String(req.query?.filename || '');
+        offset = Number(req.query?.offset);
+        chunk = Buffer.isBuffer(req.body) ? req.body : null;
+      } else {
+        // Backward compatibility with any older cached browser code.
+        filename = String(body.filename || '');
+        offset = Number(body.offset);
+        chunk = decodeChunk(body.chunkBase64);
+      }
+
       if (!validFilename(filename, mediaType)) return res.status(400).json({ error: 'Invalid upload.' });
-      const offset = Number(body.offset);
       if (!Number.isInteger(offset) || offset < 0) return res.status(400).json({ error: 'Invalid upload chunk.' });
-      const chunk = decodeChunk(body.chunkBase64);
-      if (!chunk) return res.status(400).json({ error: 'Invalid upload chunk.' });
+      if (!chunk || !chunk.length || chunk.length > MAX_CHUNK_BYTES) {
+        return res.status(400).json({ error: 'Invalid upload chunk.' });
+      }
+
       await writeChunk(filename, mediaType, offset, chunk);
       return res.status(200).json({ ok: true, receivedThrough: offset + chunk.length });
     }
