@@ -37,6 +37,7 @@
       : '';
 
     return `<article class="photo-record-card live-photo-card" data-photo-id="${photo.photo_id}">
+      <button class="photo-sort-handle" type="button" aria-label="Move this photo or video">☰ Move</button>
       ${media}
       <div class="photo-record-body">
         ${duration}
@@ -103,6 +104,79 @@
     });
   }
 
+  function wireSorting(container, apiYear, status) {
+    let draggedCard = null;
+    let activeHandle = null;
+    let changed = false;
+
+    async function saveOrder() {
+      if (!changed) return;
+      const photoIds = Array.from(container.querySelectorAll('.live-photo-card'))
+        .map(card => Number(card.dataset.photoId));
+      status.textContent = 'Saving order...';
+      try {
+        await api('PUT', { photoYear: apiYear, photo_ids: photoIds });
+        status.textContent = 'Order saved.';
+        setTimeout(() => { status.textContent = 'Drag the Move handle to rearrange photos and videos. Changes save automatically.'; }, 1600);
+      } catch (error) {
+        alert(error.message);
+        window.location.reload();
+      }
+    }
+
+    function findTargetCard(x, y) {
+      const cards = Array.from(container.querySelectorAll('.live-photo-card'));
+      return cards.find(card => {
+        if (card === draggedCard) return false;
+        const rect = card.getBoundingClientRect();
+        return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+      }) || null;
+    }
+
+    container.querySelectorAll('.photo-sort-handle').forEach(handle => {
+      handle.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        event.preventDefault();
+        draggedCard = handle.closest('.live-photo-card');
+        activeHandle = handle;
+        changed = false;
+        draggedCard.classList.add('is-being-sorted');
+        document.body.classList.add('media-sort-active');
+        handle.setPointerCapture?.(event.pointerId);
+      });
+
+      handle.addEventListener('pointermove', event => {
+        if (!draggedCard || activeHandle !== handle) return;
+        event.preventDefault();
+        const target = findTargetCard(event.clientX, event.clientY);
+        if (!target) return;
+        const rect = target.getBoundingClientRect();
+        const before = event.clientY < rect.top + rect.height / 2 ||
+          (Math.abs(event.clientY - (rect.top + rect.height / 2)) < rect.height * 0.22 &&
+           event.clientX < rect.left + rect.width / 2);
+        const reference = before ? target : target.nextElementSibling;
+        if (reference !== draggedCard) {
+          container.insertBefore(draggedCard, reference);
+          changed = true;
+        }
+      });
+
+      const finish = async event => {
+        if (!draggedCard || activeHandle !== handle) return;
+        event.preventDefault();
+        try { handle.releasePointerCapture?.(event.pointerId); } catch (_) {}
+        draggedCard.classList.remove('is-being-sorted');
+        document.body.classList.remove('media-sort-active');
+        draggedCard = null;
+        activeHandle = null;
+        await saveOrder();
+      };
+
+      handle.addEventListener('pointerup', finish);
+      handle.addEventListener('pointercancel', finish);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     const yearLabel = document.getElementById('gallery-year');
     if (!yearLabel) return;
@@ -113,9 +187,14 @@
     const target = isBefore ? document.getElementById('gallery-before-1980') : document.getElementById('gallery-default');
     if (!target) return;
 
+    const sortStatus = document.createElement('p');
+    sortStatus.className = 'photo-sort-status';
+    sortStatus.textContent = 'Drag the Move handle to rearrange photos and videos. Changes save automatically.';
+    target.insertAdjacentElement('afterend', sortStatus);
+
     const liveSection = document.createElement('div');
     liveSection.className = 'photo-card-grid live-photo-grid';
-    target.insertAdjacentElement('afterend', liveSection);
+    sortStatus.insertAdjacentElement('afterend', liveSection);
 
     try {
       const response = await fetch(`/api/photos?year=${encodeURIComponent(apiYear)}`, { credentials:'same-origin' });
@@ -126,6 +205,7 @@
       if (!data.photos.length) {
         if (isBefore || is2026) {
           liveSection.remove();
+          sortStatus.remove();
         } else {
           liveSection.innerHTML = '<p class="archive-note">No uploaded photos or videos for this year yet.</p>';
         }
@@ -135,6 +215,7 @@
       liveSection.innerHTML = data.photos.map(mediaCard).join('');
       wireLightbox(liveSection);
       wireActions(liveSection);
+      wireSorting(liveSection, apiYear, sortStatus);
     } catch (error) {
       liveSection.innerHTML = `<p class="archive-note">${escapeHtml(error.message)}</p>`;
     }

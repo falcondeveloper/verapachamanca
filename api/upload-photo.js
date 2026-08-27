@@ -206,11 +206,16 @@ module.exports = async function handler(req, res) {
 
       const imageUrl = publicImageUrl(filename);
       const durationSeconds = mediaType === 'video' ? Math.ceil(Number(body.durationSeconds)) : null;
+      const [orderRows] = await db.execute(
+        'SELECT COALESCE(MAX(order_id), 0) + 1 AS next_order FROM vera_photos WHERE photo_year = ? AND is_active = 1',
+        [photoYear]
+      );
+      const nextOrder = Number(orderRows[0]?.next_order || 1);
       const [result] = await db.execute(
         `INSERT INTO vera_photos
-         (uploaded_by_user_id, filename, image_url, photo_year, caption, family_member_name, media_type, duration_seconds, is_active)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-        [user.user_id, filename, imageUrl, photoYear, caption, familyMemberName, mediaType, durationSeconds]
+         (uploaded_by_user_id, filename, image_url, photo_year, order_id, caption, family_member_name, media_type, duration_seconds, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+        [user.user_id, filename, imageUrl, photoYear, nextOrder, caption, familyMemberName, mediaType, durationSeconds]
       );
 
       return res.status(201).json({
