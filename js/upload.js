@@ -4,7 +4,7 @@
   const MAX_VIDEO_SECONDS = 120;
   const MAX_VIDEO_BYTES = 150 * 1024 * 1024;
   const MAX_PHOTO_BYTES = 30 * 1024 * 1024;
-  const CHUNK_BYTES = 2 * 1024 * 1024;
+  const CHUNK_BYTES = 512 * 1024;
 
   function yearOptions(selected = String(currentYear)) {
     const items = ['<option value="before-1980">Before 1980</option>'];
@@ -72,7 +72,11 @@
   }
 
 
-  async function postBinaryChunk(mediaType, filename, offset, chunk) {
+  function wait(ms) {
+    return new Promise(resolve => window.setTimeout(resolve, ms));
+  }
+
+  async function postBinaryChunk(mediaType, filename, offset, chunk, status) {
     const params = new URLSearchParams({
       action: `${mediaType}-chunk`,
       mediaType,
@@ -80,21 +84,40 @@
       offset: String(offset)
     });
 
-    let response;
-    try {
-      response = await fetch(`/api/upload-photo?${params.toString()}`, {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/octet-stream' },
-        body: chunk
-      });
-    } catch (error) {
-      throw new Error('Upload connection failed. Please retry this item.');
+    const delays = [0, 800, 1600, 2800];
+    let lastError = null;
+
+    for (let attempt = 0; attempt < delays.length; attempt += 1) {
+      if (delays[attempt]) await wait(delays[attempt]);
+
+      if (attempt > 0 && status) {
+        status.textContent = `Connection interrupted. Retrying... ${attempt + 1} of ${delays.length}`;
+      }
+
+      try {
+        const response = await fetch(`/api/upload-photo?${params.toString()}`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          cache: 'no-store',
+          headers: { 'Content-Type': 'application/octet-stream' },
+          body: chunk
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (response.ok) return data;
+
+        // Retry temporary server/network failures. Do not retry obvious bad-request errors.
+        if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
+          throw new Error(data.error || 'Upload chunk was rejected.');
+        }
+
+        lastError = new Error(data.error || `Temporary upload error (${response.status}).`);
+      } catch (error) {
+        lastError = error;
+      }
     }
 
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || 'Upload chunk failed.');
-    return data;
+    throw new Error(lastError?.message || 'Upload connection failed after several retries.');
   }
 
   async function uploadChunked(entry, meta, status) {
@@ -129,7 +152,7 @@
         const chunk = file.slice(offset, end);
         const percent = Math.round((end / file.size) * 100);
         status.textContent = `Uploading ${entry.mediaType}... ${percent}%`;
-        await postBinaryChunk(entry.mediaType, filename, offset, chunk);
+        await postBinaryChunk(entry.mediaType, filename, offset, chunk, status);
       }
 
       status.textContent = `Finishing ${entry.mediaType} upload...`;
