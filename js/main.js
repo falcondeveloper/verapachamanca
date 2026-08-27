@@ -3,7 +3,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const menuButton = document.querySelector(".menu-toggle");
   const nav = document.querySelector(".main-nav");
   if (menuButton && nav) {
+    // Keep Family Tree as a top-level navigation option on every page.
+    if (!nav.querySelector('a[href="family-tree.html"]')) {
+      const familyTreeLink = document.createElement("a");
+      familyTreeLink.href = "family-tree.html";
+      familyTreeLink.textContent = "Family Tree";
+      const photosLink = nav.querySelector('a[href="photos.html"]');
+      if (photosLink) {
+        photosLink.insertAdjacentElement("afterend", familyTreeLink);
+      } else {
+        nav.prepend(familyTreeLink);
+      }
+    }
+
+    // Mobile-only discoverability hint. Show once per browser session for 3 seconds.
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      let alreadyShown = false;
+      try {
+        alreadyShown = sessionStorage.getItem("vera-menu-hint-shown") === "1";
+      } catch (_) {}
+
+      if (!alreadyShown) {
+        const hint = document.createElement("small");
+        hint.className = "menu-callout";
+        hint.setAttribute("aria-hidden", "true");
+        hint.textContent = "Tap MENU for more options";
+        menuButton.appendChild(hint);
+
+        try {
+          sessionStorage.setItem("vera-menu-hint-shown", "1");
+        } catch (_) {}
+
+        window.setTimeout(() => {
+          hint.classList.add("menu-callout-hide");
+          window.setTimeout(() => hint.remove(), 350);
+        }, 3000);
+      }
+    }
     menuButton.addEventListener("click", () => {
+      menuButton.querySelector(".menu-callout")?.remove();
       const isOpen = nav.classList.toggle("open");
       menuButton.setAttribute("aria-expanded", String(isOpen));
     });
