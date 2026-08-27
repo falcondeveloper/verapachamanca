@@ -305,10 +305,9 @@
       const response = await fetch(`/api/photos?year=${encodeURIComponent(apiYear)}`, { credentials:'same-origin' });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Unable to load photos and videos.');
-      const is2026 = String(rawYear) === '2026';
-      if (!isBefore && !is2026) target.hidden = true;
+      if (!isBefore) target.hidden = true;
       if (!data.photos.length) {
-        if (isBefore || is2026) {
+        if (isBefore) {
           liveSection.remove();
           sortStatus.remove();
         } else {
