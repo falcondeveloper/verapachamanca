@@ -240,7 +240,34 @@
       }
 
       button.disabled = true;
-      button.textContent = 'Uploading...';
+
+      const totalPhotos = selectedFiles.filter(item => item.mediaType === 'photo').length;
+      const totalVideos = selectedFiles.filter(item => item.mediaType === 'video').length;
+      let uploadedPhotos = selectedFiles.filter(item => {
+        const card = list.querySelector(`[data-upload-id="${item.id}"]`);
+        return item.mediaType === 'photo' && card && card.classList.contains('upload-complete');
+      }).length;
+      let uploadedVideos = selectedFiles.filter(item => {
+        const card = list.querySelector(`[data-upload-id="${item.id}"]`);
+        return item.mediaType === 'video' && card && card.classList.contains('upload-complete');
+      }).length;
+
+      function updateBatchProgress() {
+        const parts = [];
+        if (totalPhotos) parts.push(`Images: ${uploadedPhotos} of ${totalPhotos} uploaded`);
+        if (totalVideos) parts.push(`Videos: ${uploadedVideos} of ${totalVideos} uploaded`);
+
+        const progressText = parts.join(' · ');
+        button.textContent = progressText ? `Uploading... ${progressText}` : 'Uploading...';
+
+        const target = document.querySelector('.upload-actions p');
+        if (target) {
+          target.innerHTML = `<strong>${progressText}</strong><br>Current file progress is shown above.`;
+        }
+      }
+
+      updateBatchProgress();
+
       let uploaded = 0;
       let failed = 0;
 
@@ -257,9 +284,12 @@
           status.className = 'upload-item-status working';
           await uploadChunked(entry, meta, status);
           uploaded += 1;
+          if (entry.mediaType === 'photo') uploadedPhotos += 1;
+          if (entry.mediaType === 'video') uploadedVideos += 1;
           status.textContent = 'Uploaded successfully.';
           status.className = 'upload-item-status success';
           card.classList.add('upload-complete');
+          updateBatchProgress();
           if (card.dataset.objectUrl) {
             URL.revokeObjectURL(card.dataset.objectUrl);
             delete card.dataset.objectUrl;
