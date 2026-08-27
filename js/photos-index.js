@@ -10,7 +10,6 @@
       if (!response.ok || !data.photos.length) return;
 
       const groups = new Map([
-        ['2026', { count: 2, image: 'images/nextgen.jpg' }],
         ['before-1980', { count: 20, image: 'images/pre1980/01-04aa.jpg' }]
       ]);
       for (const media of data.photos) {
@@ -28,9 +27,9 @@
       grid.innerHTML = keys.map((key, index) => {
         const group = groups.get(key);
         const label = key === 'before-1980' ? 'Before 1980' : key;
-        const image = group.image || 'images/nextgen.jpg';
+        const image = group.image || '';
         return `<a class="year-card simple-year-card${index===0?' featured-year':''}" href="gallery.html?year=${encodeURIComponent(key)}">
-          <div class="year-image" style="background-image:url('${escapeHtml(image)}');background-size:cover;background-position:center"></div>
+          <div class="year-image"${image ? ` style="background-image:url('${escapeHtml(image)}');background-size:cover;background-position:center"` : ''}></div>
           <div><span>${key === 'before-1980' ? 'Historical media' : 'Family archive'}</span><h2>${escapeHtml(label)}</h2><p>${group.count} item${group.count===1?'':'s'}</p><strong>View photos & videos →</strong></div>
         </a>`;
       }).join('');
