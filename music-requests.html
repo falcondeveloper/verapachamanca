@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
+  <meta name="description" content="Vera Family Reunion music request list." />
+  <title>Music Requests | Vera Pachamanca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260826-menu1" />
+  <script src="js/site-access.js"></script>
+  <style>
+    .music-section { background:#fff; }
+    .music-form-card { max-width:900px; margin:0 auto 55px; }
+    .music-form { grid-template-columns:1fr 1fr; }
+    .music-form-actions,.music-form .form-message { grid-column:1/-1; }
+    .music-list-heading { max-width:900px; margin:0 auto 20px; }
+    .music-list-shell { max-width:900px; margin:0 auto; }
+    .music-table { table-layout:fixed; }
+    .music-table th:first-child,.music-table td:first-child { width:50%; }
+    .music-table th:last-child,.music-table td:last-child { width:50%; }
+    .music-artist-cell { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .music-artist-cell .table-action { flex:0 0 auto; }
+    @media (max-width:700px) {
+      .music-form { grid-template-columns:1fr; }
+      .music-form-actions,.music-form .form-message { grid-column:auto; }
+      .music-table,.music-table tbody { display:table; width:100%; }
+      .music-table thead { display:table-header-group; }
+      .music-table tr { display:table-row; padding:0; }
+      .music-table th,.music-table td { display:table-cell; width:50% !important; padding:11px 9px; position:static; border-top:1px solid var(--line); }
+      .music-table td::before { display:none; }
+      .music-table th { border-top:0; }
+      .music-artist-cell { align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header solid-header">
+    <a class="brand" href="index.html"><span class="brand-mark">VP</span><span><strong>verapachamanca.com</strong><small>Vera Family Reunion</small></span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><span class="sr-only">Open navigation</span></button>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#weekend">Weekend</a>
+      <a href="photos.html">Photos</a>
+      <a href="volunteers.html">Volunteers</a>
+      <a class="active-link" href="music-requests.html">Music Requests</a>
+      <a href="index.html#travel">Travel</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" type="button" aria-expanded="false">Our Story <span aria-hidden="true">▾</span></button>
+        <div class="nav-dropdown-menu">
+          <a href="index.html#history">Vera Family Story</a>
+          <div class="nav-submenu">
+            <button class="nav-submenu-toggle" type="button" aria-expanded="false">Golden Pachamanca <span aria-hidden="true">›</span></button>
+            <div class="nav-submenu-menu">
+              <a href="goldenpachamanca.html">Introduction</a>
+              <a href="golden-pachamanca.html">Pachamanca</a>
+              <a href="golden-history.html">History of the Golden Pachamanca</a>
+              <a href="golden-tumbamonte.html">Chonguinada &amp; Tumbamonte</a>
+              <a href="golden-map.html">Map to Pachamanca</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="nav-button" href="login.html">Family Login</a>
+    </nav>
+  </header>
+
+  <main class="inner-page">
+    <section class="page-hero volunteer-page-hero">
+      <p class="eyebrow">Sunday soundtrack</p>
+      <h1>Music Requests</h1>
+      <p>Add songs you want to hear at the reunion. Artist is optional.</p>
+    </section>
+
+    <section class="section music-section">
+      <div class="volunteer-form-card music-form-card">
+        <div>
+          <p class="eyebrow">Request a song</p>
+          <h2>Add Music</h2>
+          <p>Enter the song title. Add the artist if you know it.</p>
+        </div>
+
+        <form id="music-request-form" class="volunteer-form music-form">
+          <label>Song name
+            <input id="song-name" type="text" maxlength="255" required placeholder="Song title" />
+          </label>
+
+          <label>Artist <span>(optional)</span>
+            <input id="artist-name" type="text" maxlength="255" placeholder="Artist name" />
+          </label>
+
+          <div class="volunteer-form-actions music-form-actions">
+            <button class="button button-primary" id="music-save-button" type="submit">Add Song</button>
+          </div>
+          <p id="music-form-message" class="form-message" role="status"></p>
+        </form>
+      </div>
+
+      <div class="volunteer-list-heading music-list-heading">
+        <div>
+          <p class="eyebrow">Requested songs</p>
+          <h2>Music List</h2>
+          <p id="music-count"></p>
+        </div>
+        <button class="button button-outline" type="button" id="music-refresh-button">Refresh</button>
+      </div>
+
+      <div class="music-list-shell">
+        <div id="music-loading" class="volunteer-empty">Loading music requests...</div>
+
+        <div class="volunteer-table-wrap" id="music-table-wrap" hidden>
+          <table class="volunteer-table music-table">
+            <thead>
+              <tr>
+                <th>Song</th>
+                <th>Artist</th>
+              </tr>
+            </thead>
+            <tbody id="music-table-body"></tbody>
+          </table>
+        </div>
+
+        <div id="music-empty" class="volunteer-empty" hidden>No songs have been requested yet. Add the first one.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
+
+  <script src="js/main.js?v=20260826-menu1"></script>
+  <script src="js/music-requests.js?v=20260829-music1"></script>
+</body>
+</html>
