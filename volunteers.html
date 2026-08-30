@@ -164,6 +164,12 @@
       }
     }
 
+  
+    .sheet-zoom-controls button:disabled {
+      opacity: .35;
+      cursor: default;
+    }
+
   </style>
 </head>
 <body>
@@ -221,12 +227,63 @@
           referrerpolicy="no-referrer-when-downgrade">
         </iframe>
       </div>
-      <p class="volunteer-sheet-help">Use two fingers to zoom or resize the sheet. To make changes on a phone, tap <strong>Edit Volunteer Sheet</strong> above.</p>
+      <p class="volunteer-sheet-help">Use <strong>−</strong> to show more spreadsheet columns and <strong>+</strong> to make the sheet larger. To edit on a phone, tap <strong>Edit Volunteer Sheet</strong> above.</p>
     </section>
   </main>
 
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260830-volunteers-sheet1"></script>
+
+  <script>
+    (() => {
+      const wrap = document.querySelector('.volunteer-sheet-frame');
+      const frame = wrap?.querySelector('iframe');
+      const zoomOut = document.getElementById('sheet-zoom-out');
+      const zoomIn = document.getElementById('sheet-zoom-in');
+      const zoomFit = document.getElementById('sheet-zoom-fit');
+      const zoomLabel = document.getElementById('sheet-zoom-label');
+
+      if (!wrap || !frame || !zoomOut || !zoomIn || !zoomFit || !zoomLabel) return;
+
+      const levels = [0.60, 0.70, 0.80, 0.90, 1.00, 1.10, 1.25];
+      let index = window.innerWidth <= 900 ? 2 : 4;
+
+      function applyZoom() {
+        const scale = levels[index];
+
+        frame.style.setProperty('transform', `scale(${scale})`, 'important');
+        frame.style.setProperty('transform-origin', 'top left', 'important');
+
+        // Give Google Sheets a wider real viewport when zoomed out.
+        // Example: 80% zoom = iframe is 125% wide, then visually scaled back to fit.
+        frame.style.setProperty('width', `${100 / scale}%`, 'important');
+        frame.style.setProperty('height', `${100 / scale}%`, 'important');
+        frame.style.setProperty('min-height', `${72 / scale}vh`, 'important');
+
+        zoomLabel.textContent = `${Math.round(scale * 100)}%`;
+        zoomOut.disabled = index === 0;
+        zoomIn.disabled = index === levels.length - 1;
+      }
+
+      zoomOut.addEventListener('click', () => {
+        if (index > 0) index -= 1;
+        applyZoom();
+      });
+
+      zoomIn.addEventListener('click', () => {
+        if (index < levels.length - 1) index += 1;
+        applyZoom();
+      });
+
+      zoomFit.addEventListener('click', () => {
+        index = window.innerWidth <= 900 ? 2 : 4;
+        applyZoom();
+      });
+
+      applyZoom();
+    })();
+  </script>
+
 </body>
 </html>
