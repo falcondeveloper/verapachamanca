@@ -114,6 +114,56 @@
       }
     }
 
+  
+    .sheet-zoom-controls {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:0 0 8px;
+    }
+    .sheet-zoom-controls button {
+      min-width:42px;
+      height:38px;
+      padding:0 12px;
+      border:1px solid #8ba093;
+      border-radius:10px;
+      background:#fff;
+      color:#244533;
+      font-weight:800;
+      font-size:16px;
+      cursor:pointer;
+    }
+    .sheet-zoom-controls #sheet-zoom-fit {
+      min-width:58px;
+      font-size:12px;
+    }
+    .sheet-zoom-controls #sheet-zoom-label {
+      font-size:12px;
+      font-weight:700;
+      color:#51665a;
+    }
+    .volunteer-sheet-frame {
+      position:relative;
+    }
+    .volunteer-sheet-frame iframe {
+      transform-origin:top left;
+    }
+
+    @media (max-width:900px) {
+      .sheet-zoom-controls {
+        padding:0 5px;
+        margin-bottom:6px;
+      }
+      .sheet-zoom-controls button {
+        min-width:46px;
+        height:42px;
+        font-size:18px;
+      }
+      .sheet-zoom-controls #sheet-zoom-fit {
+        font-size:12px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -154,6 +204,14 @@
     </section>
 
     <section class="section volunteer-sheet-section">
+      
+      <div class="sheet-zoom-controls" aria-label="Spreadsheet zoom controls">
+        <button type="button" id="sheet-zoom-out" aria-label="Zoom out">−</button>
+        <button type="button" id="sheet-zoom-fit">Fit</button>
+        <button type="button" id="sheet-zoom-in" aria-label="Zoom in">+</button>
+        <span id="sheet-zoom-label">100%</span>
+      </div>
+
       <div class="volunteer-sheet-frame">
         <iframe
           title="Vera Family Reunion volunteer spreadsheet"
