@@ -28,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const youtubeSearchSubmit = document.getElementById('youtube-search-submit');
   const youtubeSearchStatus = document.getElementById('youtube-search-status');
   const youtubeSearchResults = document.getElementById('youtube-search-results');
-  const youtubeSearchPreview = document.getElementById('youtube-search-preview');
-  const youtubeSearchPreviewFrame = document.getElementById('youtube-search-preview-frame');
   const selectedYouTube = document.getElementById('music-selected-youtube');
   const selectedYouTubeThumb = document.getElementById('music-selected-youtube-thumb');
   const selectedYouTubeTitle = document.getElementById('music-selected-youtube-title');
@@ -84,18 +82,49 @@ document.addEventListener('DOMContentLoaded', () => {
     showSelectedYouTube(videoId);
   }
 
+  function stopInlineYouTubePreviews() {
+    youtubeSearchResults.querySelectorAll('.youtube-result').forEach(card => {
+      card.classList.remove('is-previewing');
+      const frame = card.querySelector('.youtube-result-preview-frame iframe');
+      if (frame) frame.removeAttribute('src');
+      const previewButton = card.querySelector('.youtube-preview-result');
+      if (previewButton) {
+        previewButton.textContent = 'Preview';
+        previewButton.disabled = false;
+      }
+    });
+  }
+
   function closeYouTubeSearch() {
+    stopInlineYouTubePreviews();
     youtubeSearchModal.hidden = true;
-    youtubeSearchPreview.hidden = true;
-    youtubeSearchPreviewFrame.removeAttribute('src');
     document.body.style.overflow = '';
   }
 
-  function previewYouTubeResult(videoId) {
-    if (!videoId) return;
-    youtubeSearchPreviewFrame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0`;
-    youtubeSearchPreview.hidden = false;
-    youtubeSearchPreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  function previewYouTubeResult(videoId, trigger) {
+    if (!videoId || !trigger) return;
+
+    const card = trigger.closest('.youtube-result');
+    if (!card) return;
+
+    const wasPreviewing = card.classList.contains('is-previewing');
+    stopInlineYouTubePreviews();
+
+    if (wasPreviewing) return;
+
+    const frame = card.querySelector('.youtube-result-preview-frame iframe');
+    if (!frame) return;
+
+    card.classList.add('is-previewing');
+    frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0`;
+
+    const previewButton = card.querySelector('.youtube-result-actions .youtube-preview-result');
+    if (previewButton) {
+      previewButton.textContent = 'Playing';
+      previewButton.disabled = true;
+    }
+
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function renderYouTubeSearchResults(results) {
@@ -122,6 +151,17 @@ document.addEventListener('DOMContentLoaded', () => {
             data-video-id="${escapeHtml(result.video_id)}"
             data-youtube-url="${escapeHtml(result.youtube_url)}"
             data-title="${escapeHtml(result.title)}">Use This</button>
+        </div>
+        <div class="youtube-result-preview">
+          <div class="youtube-result-preview-label">
+            <span>▶ Previewing this result</span>
+            <span>Use This ↑</span>
+          </div>
+          <div class="youtube-result-preview-frame">
+            <iframe title="YouTube preview: ${escapeHtml(result.title)}"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowfullscreen></iframe>
+          </div>
         </div>`;
       youtubeSearchResults.appendChild(card);
     }
@@ -138,9 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
     youtubeSearchSubmit.disabled = true;
     youtubeSearchSubmit.textContent = 'Searching...';
     youtubeSearchStatus.textContent = 'Searching YouTube...';
+    stopInlineYouTubePreviews();
     youtubeSearchResults.innerHTML = '';
-    youtubeSearchPreview.hidden = true;
-    youtubeSearchPreviewFrame.removeAttribute('src');
 
     try {
       const response = await fetch(`/api/youtube-search?q=${encodeURIComponent(query)}`, {
@@ -172,9 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     youtubeSearchQuery.value = query;
     youtubeSearchStatus.textContent = '';
+    stopInlineYouTubePreviews();
     youtubeSearchResults.innerHTML = '';
-    youtubeSearchPreview.hidden = true;
-    youtubeSearchPreviewFrame.removeAttribute('src');
     youtubeSearchModal.hidden = false;
     document.body.style.overflow = 'hidden';
     youtubeSearchQuery.focus();
@@ -504,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const previewButton = event.target.closest('.youtube-preview-result');
     if (previewButton) {
-      previewYouTubeResult(previewButton.dataset.videoId);
+      previewYouTubeResult(previewButton.dataset.videoId, previewButton);
       return;
     }
 

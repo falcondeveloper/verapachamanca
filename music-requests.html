@@ -373,9 +373,12 @@
     .youtube-search-bar input { flex:1 1 auto; min-width:0; padding:12px; border:1px solid var(--line); border-radius:10px; font:inherit; }
     .youtube-search-bar .button { margin:0; flex:0 0 auto; }
     .youtube-search-status { min-height:20px; margin:4px 0 10px; }
-    .youtube-search-preview { margin:10px 0 15px; }
-    .youtube-search-preview-frame { width:100%; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#111; }
-    .youtube-search-preview-frame iframe { width:100%; height:100%; border:0; display:block; }
+    .youtube-result.is-previewing { border-color:#2f6a4f; box-shadow:0 0 0 2px rgba(47,106,79,.14); background:#fbfdf9; }
+    .youtube-result-preview { grid-column:1/-1; display:none; }
+    .youtube-result.is-previewing .youtube-result-preview { display:block; }
+    .youtube-result-preview-label { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:2px 0 7px; font-size:11px; font-weight:800; color:#2f6a4f; letter-spacing:.06em; text-transform:uppercase; }
+    .youtube-result-preview-frame { width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#111; }
+    .youtube-result-preview-frame iframe { width:100%; height:100%; border:0; display:block; }
     .youtube-search-results { display:grid; gap:10px; }
     .youtube-result { display:grid; grid-template-columns:150px minmax(0,1fr) auto; gap:12px; align-items:center; padding:10px; border:1px solid var(--line); border-radius:12px; background:#fff; }
     .youtube-result-thumb { position:relative; width:150px; aspect-ratio:16/9; border:0; padding:0; border-radius:9px; overflow:hidden; background:#111; cursor:pointer; }
@@ -404,6 +407,9 @@
       .youtube-result-copy small { font-size:9px; line-height:1.15; display:block; }
       .youtube-result-actions { gap:4px; }
       .youtube-result-actions .table-action { min-width:0; width:100%; padding:6px 3px; font-size:9px; }
+      .youtube-result-preview { margin-top:3px; }
+      .youtube-result-preview-label { font-size:9px; margin-bottom:5px; }
+      .youtube-result-preview-frame { border-radius:8px; }
     }
 
   </style>
@@ -551,19 +557,13 @@
       <button class="youtube-search-close" type="button" aria-label="Close YouTube search" data-youtube-close>×</button>
       <p class="eyebrow">Find the right version</p>
       <h2 id="youtube-search-title">Search YouTube</h2>
-      <p class="youtube-search-intro">Preview a result, then tap <strong>Use This</strong> to attach it to the music request.</p>
+      <p class="youtube-search-intro">Tap <strong>Preview</strong> and the player will open inside that exact result. Then tap <strong>Use This</strong> on the same result.</p>
 
       <div class="youtube-search-bar">
         <input id="youtube-search-query" type="search" maxlength="200" autocomplete="off" placeholder="Song and artist" />
         <button class="button button-primary" type="button" id="youtube-search-submit">Search</button>
       </div>
       <p class="form-message youtube-search-status" id="youtube-search-status" role="status"></p>
-
-      <div class="youtube-search-preview" id="youtube-search-preview" hidden>
-        <div class="youtube-search-preview-frame">
-          <iframe id="youtube-search-preview-frame" title="YouTube preview" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
 
       <div class="youtube-search-results" id="youtube-search-results"></div>
     </section>
@@ -573,6 +573,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260830-youtubesearch1"></script>
+  <script src="js/music-requests.js?v=20260830-inlinepreview1"></script>
 </body>
 </html>
