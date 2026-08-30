@@ -26,6 +26,8 @@
     .music-table th:last-child,.music-table td:last-child { width:50%; }
     .music-artist-cell { display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .music-artist-cell .table-action { flex:0 0 auto; }
+    .music-row-actions { display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; }
+    .music-row-actions .table-action { margin:0; }
     @media (max-width:700px) {
       .music-form { grid-template-columns:1fr; }
       .music-form-actions,.music-form .form-message,.music-youtube-label { grid-column:auto; }
@@ -99,6 +101,7 @@
 
           <div class="volunteer-form-actions music-form-actions">
             <button class="button button-primary" id="music-save-button" type="submit">Add Song</button>
+            <button class="button button-outline" id="music-cancel-button" type="button" hidden>Cancel Edit</button>
           </div>
           <p id="music-form-message" class="form-message" role="status"></p>
         </form>
@@ -136,6 +139,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260830-youtube1"></script>
+  <script src="js/music-requests.js?v=20260830-edit1"></script>
 </body>
 </html>

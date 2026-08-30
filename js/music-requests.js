@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const artistInput = document.getElementById('artist-name');
   const youtubeInput = document.getElementById('youtube-url');
   const saveButton = document.getElementById('music-save-button');
+  const cancelButton = document.getElementById('music-cancel-button');
   const message = document.getElementById('music-form-message');
   const tbody = document.getElementById('music-table-body');
   const tableWrap = document.getElementById('music-table-wrap');
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const count = document.getElementById('music-count');
 
   let requests = [];
+  let editingRequestId = null;
 
   const escapeHtml = value => String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -43,7 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
               ${escapeHtml(request.artist_name || '—')}
               ${request.youtube_url ? `<br><a class="music-youtube-link" href="${escapeHtml(request.youtube_url)}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>` : ''}
             </span>
-            <button type="button" class="table-action danger delete-music-request" data-id="${request.request_id}">Delete</button>
+            <span class="music-row-actions">
+              <button type="button" class="table-action edit-music-request" data-id="${request.request_id}">Edit</button>
+              <button type="button" class="table-action danger delete-music-request" data-id="${request.request_id}">Delete</button>
+            </span>
           </div>
         </td>`;
       tbody.appendChild(tr);
@@ -70,6 +75,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function resetEditMode() {
+    editingRequestId = null;
+    form.reset();
+    saveButton.textContent = 'Add Song';
+    cancelButton.hidden = true;
+    message.textContent = '';
+  }
+
+  function beginEdit(request) {
+    editingRequestId = Number(request.request_id);
+    songInput.value = request.song_name || '';
+    artistInput.value = request.artist_name || '';
+    youtubeInput.value = request.youtube_url || '';
+    saveButton.textContent = 'Save Changes';
+    cancelButton.hidden = false;
+    message.textContent = `Editing: ${request.song_name}`;
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    songInput.focus();
+  }
+
+  cancelButton.addEventListener('click', () => {
+    resetEditMode();
+    songInput.focus();
+  });
+
   form.addEventListener('submit', async event => {
     event.preventDefault();
     message.textContent = '';
@@ -84,44 +114,57 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const isEditing = Number.isInteger(editingRequestId) && editingRequestId > 0;
     saveButton.disabled = true;
-    saveButton.textContent = 'Adding...';
+    saveButton.textContent = isEditing ? 'Saving...' : 'Adding...';
 
     try {
       const response = await fetch('/api/music-requests', {
-        method: 'POST',
+        method: isEditing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify({
+          request_id: isEditing ? editingRequestId : undefined,
           song_name: songName,
           artist_name: artistName || null,
           youtube_url: youtubeUrl || null
         })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Unable to add music request.');
+      if (!response.ok) throw new Error(data.error || (isEditing ? 'Unable to save changes.' : 'Unable to add music request.'));
 
+      const successText = isEditing ? 'Changes saved.' : 'Song added.';
+      editingRequestId = null;
       form.reset();
-      message.textContent = 'Song added.';
+      cancelButton.hidden = true;
+      saveButton.textContent = 'Add Song';
+      message.textContent = successText;
       await loadRequests();
       songInput.focus();
     } catch (error) {
       message.textContent = error.message;
     } finally {
       saveButton.disabled = false;
-      saveButton.textContent = 'Add Song';
+      saveButton.textContent = editingRequestId ? 'Save Changes' : 'Add Song';
     }
   });
 
   tbody.addEventListener('click', async event => {
-    const button = event.target.closest('.delete-music-request');
-    if (!button) return;
+    const editButton = event.target.closest('.edit-music-request');
+    if (editButton) {
+      const request = requests.find(item => String(item.request_id) === editButton.dataset.id);
+      if (request) beginEdit(request);
+      return;
+    }
 
-    const request = requests.find(item => String(item.request_id) === button.dataset.id);
+    const deleteButton = event.target.closest('.delete-music-request');
+    if (!deleteButton) return;
+
+    const request = requests.find(item => String(item.request_id) === deleteButton.dataset.id);
     if (!request) return;
-    if (!confirm(`Delete \"${request.song_name}\" from the music request list?`)) return;
+    if (!confirm(`Delete "${request.song_name}" from the music request list?`)) return;
 
-    button.disabled = true;
+    deleteButton.disabled = true;
     try {
       const response = await fetch('/api/music-requests', {
         method: 'DELETE',
@@ -131,12 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Unable to delete music request.');
+      if (editingRequestId === Number(request.request_id)) resetEditMode();
       await loadRequests();
     } catch (error) {
       alert(error.message);
-      button.disabled = false;
+      deleteButton.disabled = false;
     }
   });
+
 
   document.getElementById('music-refresh-button').addEventListener('click', loadRequests);
   loadRequests();
