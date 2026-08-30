@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'GET') {
       const [rows] = await db.execute(
-        `SELECT request_id, song_name, artist_name, created_at
+        `SELECT request_id, song_name, artist_name, youtube_url, created_at
          FROM vera_music_requests
          ORDER BY song_name ASC, artist_name ASC, request_id ASC`
       );
@@ -23,15 +23,32 @@ module.exports = async function handler(req, res) {
     if (req.method === 'POST') {
       const songName = nullableText(body.song_name, 255);
       const artistName = nullableText(body.artist_name, 255);
+      const youtubeUrl = nullableText(body.youtube_url, 1000);
 
       if (!songName) {
         return res.status(400).json({ error: 'Song name is required.' });
       }
 
+
+      if (youtubeUrl) {
+        let parsed;
+        try {
+          parsed = new URL(youtubeUrl);
+        } catch (_) {
+          return res.status(400).json({ error: 'Enter a valid YouTube link.' });
+        }
+
+        const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+        const isYouTube = host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtu.be';
+        if (!['http:', 'https:'].includes(parsed.protocol) || !isYouTube) {
+          return res.status(400).json({ error: 'Enter a valid YouTube link.' });
+        }
+      }
+
       const [result] = await db.execute(
-        `INSERT INTO vera_music_requests (song_name, artist_name)
-         VALUES (?, ?)`,
-        [songName, artistName]
+        `INSERT INTO vera_music_requests (song_name, artist_name, youtube_url)
+         VALUES (?, ?, ?)`,
+        [songName, artistName, youtubeUrl]
       );
 
       return res.status(201).json({ ok: true, request_id: result.insertId });

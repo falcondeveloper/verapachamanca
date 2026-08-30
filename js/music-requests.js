@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('music-request-form');
   const songInput = document.getElementById('song-name');
   const artistInput = document.getElementById('artist-name');
+  const youtubeInput = document.getElementById('youtube-url');
   const saveButton = document.getElementById('music-save-button');
   const message = document.getElementById('music-form-message');
   const tbody = document.getElementById('music-table-body');
@@ -38,7 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <td><strong>${escapeHtml(request.song_name)}</strong></td>
         <td>
           <div class="music-artist-cell">
-            <span>${escapeHtml(request.artist_name || '—')}</span>
+            <span>
+              ${escapeHtml(request.artist_name || '—')}
+              ${request.youtube_url ? `<br><a class="music-youtube-link" href="${escapeHtml(request.youtube_url)}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>` : ''}
+            </span>
             <button type="button" class="table-action danger delete-music-request" data-id="${request.request_id}">Delete</button>
           </div>
         </td>`;
@@ -72,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const songName = songInput.value.trim();
     const artistName = artistInput.value.trim();
+    const youtubeUrl = youtubeInput.value.trim();
 
     if (!songName) {
       message.textContent = 'Please enter a song name.';
@@ -89,7 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
         credentials: 'same-origin',
         body: JSON.stringify({
           song_name: songName,
-          artist_name: artistName || null
+          artist_name: artistName || null,
+          youtube_url: youtubeUrl || null
         })
       });
       const data = await response.json();

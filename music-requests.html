@@ -17,7 +17,8 @@
     .music-section { background:#fff; }
     .music-form-card { max-width:900px; margin:0 auto 55px; }
     .music-form { grid-template-columns:1fr 1fr; }
-    .music-form-actions,.music-form .form-message { grid-column:1/-1; }
+    .music-form-actions,.music-form .form-message,.music-youtube-label { grid-column:1/-1; }
+    .music-youtube-link { display:inline-block; margin-top:4px; font-size:12px; font-weight:700; }
     .music-list-heading { max-width:900px; margin:0 auto 20px; }
     .music-list-shell { max-width:900px; margin:0 auto; }
     .music-table { table-layout:fixed; }
@@ -27,7 +28,7 @@
     .music-artist-cell .table-action { flex:0 0 auto; }
     @media (max-width:700px) {
       .music-form { grid-template-columns:1fr; }
-      .music-form-actions,.music-form .form-message { grid-column:auto; }
+      .music-form-actions,.music-form .form-message,.music-youtube-label { grid-column:auto; }
       .music-table,.music-table tbody { display:table; width:100%; }
       .music-table thead { display:table-header-group; }
       .music-table tr { display:table-row; padding:0; }
@@ -72,7 +73,7 @@
     <section class="page-hero volunteer-page-hero">
       <p class="eyebrow">Sunday soundtrack</p>
       <h1>Music Requests</h1>
-      <p>Add songs you want to hear at the reunion. Artist is optional.</p>
+      <p>Add songs you want to hear at the reunion. Artist and YouTube link are optional.</p>
     </section>
 
     <section class="section music-section">
@@ -80,7 +81,7 @@
         <div>
           <p class="eyebrow">Request a song</p>
           <h2>Add Music</h2>
-          <p>Enter the song title. Add the artist if you know it.</p>
+          <p>Enter the song title. Artist and YouTube link are optional.</p>
         </div>
 
         <form id="music-request-form" class="volunteer-form music-form">
@@ -90,6 +91,10 @@
 
           <label>Artist <span>(optional)</span>
             <input id="artist-name" type="text" maxlength="255" placeholder="Artist name" />
+          </label>
+
+          <label class="music-youtube-label">YouTube link <span>(optional)</span>
+            <input id="youtube-url" type="url" maxlength="1000" inputmode="url" placeholder="https://www.youtube.com/watch?v=..." />
           </label>
 
           <div class="volunteer-form-actions music-form-actions">
@@ -131,6 +136,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260829-music1"></script>
+  <script src="js/music-requests.js?v=20260830-youtube1"></script>
 </body>
 </html>
