@@ -16,7 +16,7 @@
   <style>
     .music-section { background:#fff; }
     .music-form-card { max-width:900px; margin:0 auto 55px; }
-    .music-form { grid-template-columns:1fr 1fr; }
+    .music-form { grid-template-columns:1fr 1fr 1fr; }
     .music-form-actions,.music-form .form-message,.music-youtube-label { grid-column:1/-1; }
     .music-youtube-link { display:inline-block; margin-top:4px; font-size:12px; font-weight:700; }
     .music-list-heading { max-width:900px; margin:0 auto 20px; }
@@ -55,6 +55,16 @@
     }
 
 
+
+    .music-filter-bar { max-width:900px; margin:0 auto 14px; display:flex; align-items:end; gap:10px; flex-wrap:wrap; }
+    .music-filter-bar label { display:flex; flex-direction:column; gap:5px; font-size:12px; font-weight:700; color:#42564b; }
+    .music-filter-bar select { min-width:220px; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+    .music-filter-bar #music-selection-count { font-size:12px; font-weight:700; padding-bottom:8px; }
+    .music-song-main { display:flex; align-items:flex-start; gap:7px; min-width:0; }
+    .music-select-checkbox { width:17px; height:17px; flex:0 0 auto; margin-top:1px; }
+    .music-song-text { min-width:0; }
+    .music-category-tag { display:block; margin-top:3px; color:#7a5a43; font-size:10px; font-weight:700; line-height:1.15; }
+
     /* Compact mobile music list */
     .music-more-menu { display:none; position:relative; flex:0 0 auto; }
     .music-more-menu summary { list-style:none; cursor:pointer; user-select:none; }
@@ -82,6 +92,15 @@
       .music-more-popover { top:27px; }
       .music-more-popover button { font-size:11px; }
       .music-play-summary { margin-bottom:8px; font-size:11px; }
+      .music-filter-bar { margin-bottom:8px; gap:6px; align-items:center; }
+      .music-filter-bar label { width:100%; font-size:10px; }
+      .music-filter-bar select { width:100%; min-width:0; padding:7px 8px; font-size:11px; }
+      .music-filter-bar #music-selection-count { padding:0; font-size:10px; }
+      .music-filter-bar .table-action { padding:5px 7px; font-size:10px; }
+      .music-select-checkbox { width:15px; height:15px; }
+      .music-category-tag { font-size:8.5px; margin-top:2px; }
+      .music-song-main { gap:4px; }
+
       .music-list-heading { margin-bottom:12px; }
       .music-list-heading h2 { margin-bottom:3px; }
       .music-list-heading p { margin:0; }
@@ -143,6 +162,12 @@
             <input id="artist-name" type="text" maxlength="255" placeholder="Artist name" />
           </label>
 
+          <label>Category
+            <select id="music-category">
+              <option value="">Uncategorized</option>
+            </select>
+          </label>
+
           <label class="music-youtube-label">YouTube link <span>(optional)</span>
             <input id="youtube-url" type="url" maxlength="1000" inputmode="url" placeholder="https://www.youtube.com/watch?v=..." />
           </label>
@@ -162,7 +187,9 @@
           <p id="music-count"></p>
         </div>
         <div class="music-list-buttons">
-          <button class="button button-primary" type="button" id="music-play-all-button" disabled>▶ Play All</button>
+          <button class="button button-primary" type="button" id="music-play-all-button" disabled>▶ All</button>
+          <button class="button button-primary" type="button" id="music-play-filtered-button" disabled>▶ Filtered</button>
+          <button class="button button-primary" type="button" id="music-play-checked-button" disabled>▶ Checked</button>
           <button class="button button-outline" type="button" id="music-refresh-button">Refresh</button>
         </div>
       </div>
@@ -170,6 +197,16 @@
       <div class="music-list-shell">
         <div class="music-play-summary">
           <strong id="music-link-count">0 songs have YouTube links</strong>
+        </div>
+
+        <div class="music-filter-bar">
+          <label>Filter category
+            <select id="music-filter-category">
+              <option value="all">All Categories</option>
+            </select>
+          </label>
+          <span id="music-selection-count">0 checked</span>
+          <button class="table-action" type="button" id="music-clear-checks" disabled>Clear Checks</button>
         </div>
 
         <div class="music-player-card" id="music-player-card" hidden>
@@ -203,6 +240,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260830-compactmobile1"></script>
+  <script src="js/music-requests.js?v=20260830-categories1"></script>
 </body>
 </html>
