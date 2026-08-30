@@ -106,6 +106,249 @@
       .music-list-heading p { margin:0; }
     }
 
+
+
+    /* Refined music list layout - desktop and mobile */
+    .music-list-heading {
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:24px;
+    }
+    .music-list-buttons {
+      display:grid;
+      grid-template-columns:repeat(3, minmax(105px, 1fr));
+      gap:8px;
+      flex:0 0 auto;
+    }
+    .music-list-buttons .button {
+      min-width:0;
+      margin:0;
+      white-space:nowrap;
+      text-align:center;
+    }
+    .music-table th:first-child,.music-table td:first-child { width:58%; }
+    .music-table th:last-child,.music-table td:last-child { width:42%; }
+    .music-song-text {
+      min-width:0;
+      display:flex;
+      align-items:baseline;
+      gap:7px;
+      flex-wrap:wrap;
+    }
+    .music-category-tag {
+      display:inline-flex;
+      align-items:center;
+      margin:0;
+      padding:2px 6px;
+      border-radius:999px;
+      background:#f1ede3;
+      color:#72523d;
+      font-size:9px;
+      font-weight:700;
+      line-height:1.2;
+      white-space:nowrap;
+    }
+    .music-artist-meta {
+      display:flex;
+      align-items:center;
+      gap:7px;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+
+    @media (max-width:700px) {
+      .music-list-heading {
+        display:block;
+        margin-bottom:9px;
+      }
+      .music-list-heading > div:first-child {
+        margin-bottom:8px;
+      }
+      .music-list-buttons {
+        width:100%;
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0,1fr));
+        gap:5px;
+      }
+      .music-list-buttons .button {
+        width:100%;
+        min-height:32px;
+        padding:6px 3px;
+        border-radius:18px;
+        font-size:9.5px;
+        line-height:1;
+        letter-spacing:0;
+      }
+
+      .music-play-summary {
+        margin:0 0 6px;
+        font-size:9.5px;
+        line-height:1.25;
+      }
+      .music-filter-bar {
+        display:grid;
+        grid-template-columns:1fr auto auto;
+        align-items:end;
+        gap:5px 6px;
+        margin-bottom:7px;
+      }
+      .music-filter-bar label {
+        grid-column:1/-1;
+        width:100%;
+        gap:3px;
+        font-size:9px;
+      }
+      .music-filter-bar select {
+        width:100%;
+        min-width:0;
+        height:31px;
+        padding:4px 7px;
+        font-size:10px;
+      }
+      .music-filter-bar #music-selection-count {
+        padding:0;
+        font-size:9px;
+        white-space:nowrap;
+      }
+      .music-filter-bar .table-action {
+        min-height:26px;
+        padding:4px 7px;
+        font-size:9px;
+        line-height:1;
+        white-space:nowrap;
+      }
+
+      .music-table { table-layout:fixed; }
+      .music-table th:first-child,.music-table td:first-child { width:62% !important; }
+      .music-table th:last-child,.music-table td:last-child { width:38% !important; }
+      .music-table th,.music-table td {
+        padding:5px 5px !important;
+        vertical-align:middle;
+      }
+      .music-table th {
+        font-size:9px;
+        line-height:1;
+      }
+      .music-table td {
+        font-size:9.5px;
+        line-height:1.12;
+      }
+      .music-song-cell,.music-artist-cell {
+        min-height:31px;
+        gap:4px;
+      }
+      .music-song-main {
+        flex:1 1 auto;
+        min-width:0;
+        align-items:center;
+        gap:4px;
+      }
+      .music-select-checkbox {
+        width:14px;
+        height:14px;
+        margin:0;
+      }
+      .music-song-text {
+        min-width:0;
+        flex:1 1 auto;
+        display:flex;
+        align-items:center;
+        flex-wrap:nowrap;
+        gap:4px;
+        overflow:hidden;
+      }
+      .music-song-cell strong {
+        min-width:0;
+        font-size:9.8px;
+        line-height:1.08;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .music-category-tag {
+        flex:0 1 auto;
+        max-width:68px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        padding:1px 4px;
+        font-size:7.6px;
+        line-height:1.25;
+        white-space:nowrap;
+      }
+      .music-order-actions {
+        flex:0 0 20px;
+        width:20px;
+        display:flex;
+        flex-direction:column;
+        gap:1px;
+        margin-left:1px;
+      }
+      .music-order-actions .table-action {
+        min-width:20px !important;
+        width:20px;
+        height:14px;
+        padding:0 !important;
+        border:0;
+        border-radius:4px;
+        font-size:11px;
+        line-height:12px;
+        background:#edf3ef;
+      }
+      .move-label { display:none; }
+
+      .music-artist-cell {
+        flex-direction:row !important;
+        align-items:center !important;
+      }
+      .music-artist-meta {
+        min-width:0;
+        flex:1 1 auto;
+        display:flex;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:2px;
+        overflow:hidden;
+      }
+      .music-artist-meta > span:first-child {
+        max-width:100%;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .music-youtube-link,.music-missing-link {
+        display:block !important;
+        margin:0 !important;
+        font-size:8px !important;
+        line-height:1 !important;
+        white-space:nowrap;
+      }
+      .music-more-menu {
+        margin-left:1px;
+      }
+      .music-more-menu summary {
+        width:23px;
+        height:23px;
+        font-size:19px;
+        line-height:19px;
+      }
+      .music-more-popover {
+        top:23px;
+        min-width:86px;
+      }
+      .music-more-popover button {
+        padding:6px 8px;
+        font-size:10px;
+      }
+    }
+
+    @media (min-width:701px) {
+      .music-list-buttons { align-self:flex-end; }
+      .music-table th,.music-table td { padding-left:14px; padding-right:14px; }
+      .music-song-cell { align-items:center; }
+      .music-category-tag { font-size:10px; }
+    }
+
   </style>
 </head>
 <body>
@@ -190,7 +433,6 @@
           <button class="button button-primary" type="button" id="music-play-all-button" disabled>▶ All</button>
           <button class="button button-primary" type="button" id="music-play-filtered-button" disabled>▶ Filtered</button>
           <button class="button button-primary" type="button" id="music-play-checked-button" disabled>▶ Checked</button>
-          <button class="button button-outline" type="button" id="music-refresh-button">Refresh</button>
         </div>
       </div>
 
@@ -207,6 +449,7 @@
           </label>
           <span id="music-selection-count">0 checked</span>
           <button class="table-action" type="button" id="music-clear-checks" disabled>Clear Checks</button>
+          <button class="table-action" type="button" id="music-refresh-button">Refresh</button>
         </div>
 
         <div class="music-player-card" id="music-player-card" hidden>
@@ -240,6 +483,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260830-categories1"></script>
+  <script src="js/music-requests.js?v=20260830-ui2"></script>
 </body>
 </html>
