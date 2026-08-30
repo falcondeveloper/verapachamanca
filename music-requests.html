@@ -28,6 +28,17 @@
     .music-artist-cell .table-action { flex:0 0 auto; }
     .music-row-actions { display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; }
     .music-row-actions .table-action { margin:0; }
+
+    .music-list-buttons { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .music-play-summary { max-width:900px; margin:0 auto 14px; color:#42564b; font-size:14px; }
+    .music-player-card { max-width:900px; margin:0 auto 24px; padding:16px; border:1px solid var(--line); border-radius:14px; background:#faf8f2; }
+    .music-player-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .music-player-frame { width:100%; aspect-ratio:16/9; background:#111; border-radius:10px; overflow:hidden; }
+    .music-player-frame iframe { width:100% !important; height:100% !important; display:block; }
+    .music-song-cell { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .music-order-actions { display:flex; gap:5px; flex:0 0 auto; }
+    .music-order-actions .table-action { min-width:54px; }
+    .music-missing-link { display:inline-block; margin-top:5px; font-size:12px; font-weight:700; color:#a23a2a; }
     @media (max-width:700px) {
       .music-form { grid-template-columns:1fr; }
       .music-form-actions,.music-form .form-message,.music-youtube-label { grid-column:auto; }
@@ -37,7 +48,10 @@
       .music-table th,.music-table td { display:table-cell; width:50% !important; padding:11px 9px; position:static; border-top:1px solid var(--line); }
       .music-table td::before { display:none; }
       .music-table th { border-top:0; }
-      .music-artist-cell { align-items:flex-start; }
+      .music-artist-cell { align-items:flex-start; flex-direction:column; }
+      .music-song-cell { flex-direction:column; }
+      .music-list-buttons { width:100%; justify-content:flex-start; }
+      .music-order-actions .table-action { min-width:48px; padding-left:7px; padding-right:7px; }
     }
   </style>
 </head>
@@ -75,7 +89,7 @@
     <section class="page-hero volunteer-page-hero">
       <p class="eyebrow">Sunday soundtrack</p>
       <h1>Music Requests</h1>
-      <p>Add songs you want to hear at the reunion. Artist and YouTube link are optional.</p>
+      <p>Add songs you want to hear at the reunion. Artist and YouTube link are optional. Use Up and Down to set the play order.</p>
     </section>
 
     <section class="section music-section">
@@ -83,7 +97,7 @@
         <div>
           <p class="eyebrow">Request a song</p>
           <h2>Add Music</h2>
-          <p>Enter the song title. Artist and YouTube link are optional.</p>
+          <p>Enter the song title. Artist and YouTube link are optional. YouTube links must point to a YouTube video.</p>
         </div>
 
         <form id="music-request-form" class="volunteer-form music-form">
@@ -113,10 +127,26 @@
           <h2>Music List</h2>
           <p id="music-count"></p>
         </div>
-        <button class="button button-outline" type="button" id="music-refresh-button">Refresh</button>
+        <div class="music-list-buttons">
+          <button class="button button-primary" type="button" id="music-play-all-button" disabled>▶ Play All</button>
+          <button class="button button-outline" type="button" id="music-refresh-button">Refresh</button>
+        </div>
       </div>
 
       <div class="music-list-shell">
+        <div class="music-play-summary">
+          <strong id="music-link-count">0 songs have YouTube links</strong>
+        </div>
+
+        <div class="music-player-card" id="music-player-card" hidden>
+          <div class="music-player-heading">
+            <strong>Reunion Music Queue</strong>
+            <button class="table-action" type="button" id="music-hide-player">Hide Player</button>
+          </div>
+          <div class="music-player-frame"><div id="music-player"></div></div>
+          <p id="music-player-message" class="form-message"></p>
+        </div>
+
         <div id="music-loading" class="volunteer-empty">Loading music requests...</div>
 
         <div class="volunteer-table-wrap" id="music-table-wrap" hidden>
@@ -139,6 +169,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260830-edit1"></script>
+  <script src="js/music-requests.js?v=20260830-orderplay1"></script>
 </body>
 </html>
