@@ -412,6 +412,45 @@
       .youtube-result-preview-frame { border-radius:8px; }
     }
 
+  
+    /* Slightly larger mobile touch controls without making rows bulky */
+    @media (max-width:700px) {
+      .music-order-actions .table-action {
+        min-width:32px !important;
+        width:32px !important;
+        height:32px !important;
+        padding:0 !important;
+        border-radius:8px !important;
+        font-size:18px !important;
+        line-height:32px !important;
+      }
+
+      .music-more-menu summary {
+        width:34px !important;
+        height:34px !important;
+        font-size:24px !important;
+        line-height:30px !important;
+      }
+
+      .music-more-popover {
+        min-width:116px !important;
+        padding:7px !important;
+        top:34px !important;
+      }
+
+      .music-more-popover button {
+        min-height:38px;
+        padding:9px 12px !important;
+        font-size:13px !important;
+        line-height:1.15;
+        border-radius:7px;
+      }
+
+      .music-more-popover button + button {
+        margin-top:3px;
+      }
+    }
+
   </style>
 </head>
 <body>
