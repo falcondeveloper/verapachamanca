@@ -5,7 +5,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
 
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
   <meta name="description" content="Vera Family Reunion shared volunteer planning sheet." />
   <title>Volunteers | Vera Pachamanca</title>
@@ -41,18 +41,79 @@
       font-size: 13px;
       color: #5c685f;
     }
+
     @media (max-width: 900px) {
-      .volunteer-sheet-page { padding-left: 0; padding-right: 0; }
-      .volunteer-sheet-page .page-hero { padding-left: 18px; padding-right: 18px; }
-      .volunteer-sheet-section { padding: 0 8px 28px; }
-      .volunteer-sheet-frame,
-      .volunteer-sheet-frame iframe {
-        min-height: 72vh;
-        height: 72vh;
-        border-radius: 12px;
+      .volunteer-sheet-page {
+        padding-left: 0;
+        padding-right: 0;
       }
-      .volunteer-sheet-help { padding: 0 10px; }
+
+      .volunteer-sheet-page .page-hero {
+        padding: 8px 12px 6px !important;
+        margin: 0 !important;
+      }
+
+      .volunteer-page-hero .eyebrow {
+        display: none;
+      }
+
+      .volunteer-page-hero h1 {
+        margin: 0 0 3px !important;
+        font-size: 25px !important;
+        line-height: 1.05 !important;
+      }
+
+      .volunteer-page-hero > p:not(:last-child) {
+        margin: 0 0 6px !important;
+        font-size: 12px !important;
+        line-height: 1.25 !important;
+      }
+
+      .volunteer-page-hero > p:last-child {
+        margin: 0 !important;
+      }
+
+      .volunteer-page-hero .button {
+        min-height: 38px !important;
+        padding: 8px 15px !important;
+        font-size: 11px !important;
+        line-height: 1.1 !important;
+      }
+
+      .volunteer-sheet-section {
+        padding: 4px 5px 12px !important;
+      }
+
+      .volunteer-sheet-frame {
+        width: 100%;
+        height: calc(100dvh - 170px) !important;
+        min-height: 72vh !important;
+        border-radius: 8px !important;
+        overflow: auto !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y pinch-zoom;
+      }
+
+      .volunteer-sheet-frame iframe {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 72vh !important;
+        border-radius: 0 !important;
+        touch-action: pan-x pan-y pinch-zoom;
+      }
+
+      .volunteer-sheet-help {
+        margin: 6px 0 0 !important;
+        padding: 0 5px !important;
+        font-size: 10px !important;
+        line-height: 1.25 !important;
+      }
+
+      .site-footer {
+        margin-top: 8px !important;
+      }
     }
+
   </style>
 </head>
 <body>
@@ -89,7 +150,7 @@
       <p class="eyebrow">Pitch in</p>
       <h1>Volunteers</h1>
       <p>Use the shared family spreadsheet below to view or update volunteer plans.</p>
-      <p><a class="button button-primary" href="https://docs.google.com/spreadsheets/d/1ljOELX8DFkImGa0darGSxvG3rEg7xgbx/edit?gid=156811305#gid=156811305" target="_blank" rel="noopener">Open in Google Sheets</a></p>
+      <p><a class="button button-primary" href="https://docs.google.com/spreadsheets/d/1ljOELX8DFkImGa0darGSxvG3rEg7xgbx/edit?gid=156811305#gid=156811305" target="_blank" rel="noopener">Edit Volunteer Sheet</a></p>
     </section>
 
     <section class="section volunteer-sheet-section">
@@ -102,7 +163,7 @@
           referrerpolicy="no-referrer-when-downgrade">
         </iframe>
       </div>
-      <p class="volunteer-sheet-help">If the spreadsheet does not load or editing is awkward on your phone, tap <strong>Open in Google Sheets</strong> above.</p>
+      <p class="volunteer-sheet-help">Use two fingers to zoom or resize the sheet. To make changes on a phone, tap <strong>Edit Volunteer Sheet</strong> above.</p>
     </section>
   </main>
 
