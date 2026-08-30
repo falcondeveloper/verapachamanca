@@ -12,8 +12,61 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260826-menu1" />
+  <link rel="stylesheet" href="css/styles.css?v=20260830-homebuttons1" />
   <script src="js/site-access.js"></script>
+
+  <style>
+    /* Homepage quick actions */
+    .hero-actions .hero-volunteer-button {
+      background: #b85635;
+      color: #fff;
+      border-color: #cf7b57;
+      box-shadow: 0 8px 22px rgba(76, 29, 15, .24);
+    }
+    .hero-actions .hero-volunteer-button:hover {
+      background: #9f472b;
+    }
+
+    @media (max-width: 620px) {
+      .family-hero .hero-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        width: 100%;
+      }
+
+      .family-hero .hero-actions .hero-volunteer-button {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 50px;
+        font-size: 12px;
+        padding: 0 14px;
+      }
+
+      .family-hero .hero-actions .hero-grid-button {
+        width: 100%;
+        min-width: 0;
+        min-height: 43px;
+        padding: 0 7px;
+        font-size: 10px;
+        line-height: 1.15;
+        text-align: center;
+      }
+
+      /* Pull the historic house/car image upward and center the Cadillac more clearly. */
+      .family-hero::before {
+        background-position: 58% -195px !important;
+        background-size: auto 74% !important;
+        opacity: .74 !important;
+      }
+
+      /* The shorter button grid lets more of the background show before the photos. */
+      .family-photo-stack {
+        margin-top: 28px !important;
+      }
+    }
+  </style>
+
 </head>
 <body>
   <header class="site-header" id="top">
@@ -65,10 +118,11 @@
         <p class="hero-location">Golden, Colorado</p>
         <p class="hero-intro">Four days of family, tradition, shared meals, and memories across generations.</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#weekend">View Weekend Events</a>
-          <a class="button button-secondary" href="photos.html">Browse Family Photos</a>
-          <a class="button button-secondary" href="menu.html">Sunday's Menu</a>
-          <a class="button button-secondary" href="music-requests.html">Music Requests</a>
+          <a class="button button-primary hero-volunteer-button" href="volunteers.html">Volunteers — Sign Up</a>
+          <a class="button button-secondary hero-grid-button" href="#weekend">Weekend Events</a>
+          <a class="button button-secondary hero-grid-button" href="photos.html">Family Photos</a>
+          <a class="button button-secondary hero-grid-button" href="menu.html">Sunday's Menu</a>
+          <a class="button button-secondary hero-grid-button" href="music-requests.html">Music Requests</a>
         </div>
       </div>
 
