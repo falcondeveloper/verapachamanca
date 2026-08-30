@@ -7,13 +7,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
-  <meta name="description" content="Vera Family Reunion event volunteer list." />
-  <title>Event Volunteers | Vera Pachamanca</title>
+  <meta name="description" content="Vera Family Reunion shared volunteer planning sheet." />
+  <title>Volunteers | Vera Pachamanca</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
   <script src="js/site-access.js"></script>
+
+  <style>
+    .volunteer-sheet-page { max-width: 1600px; margin: 0 auto; }
+    .volunteer-sheet-section { padding-top: 10px; }
+    .volunteer-sheet-frame {
+      width: 100%;
+      min-height: 760px;
+      height: calc(100vh - 245px);
+      border: 1px solid rgba(35, 67, 52, .18);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 30px rgba(31, 52, 42, .08);
+    }
+    .volunteer-sheet-frame iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 760px;
+      border: 0;
+      background: #fff;
+    }
+    .volunteer-sheet-help {
+      margin: 14px 0 0;
+      font-size: 13px;
+      color: #5c685f;
+    }
+    @media (max-width: 900px) {
+      .volunteer-sheet-page { padding-left: 0; padding-right: 0; }
+      .volunteer-sheet-page .page-hero { padding-left: 18px; padding-right: 18px; }
+      .volunteer-sheet-section { padding: 0 8px 28px; }
+      .volunteer-sheet-frame,
+      .volunteer-sheet-frame iframe {
+        min-height: 72vh;
+        height: 72vh;
+        border-radius: 12px;
+      }
+      .volunteer-sheet-help { padding: 0 10px; }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header solid-header">
@@ -44,92 +84,30 @@
     </nav>
   </header>
 
-  <main class="inner-page">
+  <main class="inner-page volunteer-sheet-page">
     <section class="page-hero volunteer-page-hero">
       <p class="eyebrow">Pitch in</p>
-      <h1>Event Volunteers</h1>
-      <p>No user login is required. Anyone with access to the family website can add or update volunteer information.</p>
+      <h1>Volunteers</h1>
+      <p>Use the shared family spreadsheet below to view or update volunteer plans.</p>
+      <p><a class="button button-primary" href="https://docs.google.com/spreadsheets/d/1ljOELX8DFkImGa0darGSxvG3rEg7xgbx/edit?gid=156811305#gid=156811305" target="_blank" rel="noopener">Open in Google Sheets</a></p>
     </section>
 
-    <section class="section volunteer-section">
-      <div class="volunteer-form-card">
-        <div>
-          <p class="eyebrow">Add yourself</p>
-          <h2>Volunteer for an Event</h2>
-          <p>Pick an event and tell the family how you can help. Email and phone are optional.</p>
-        </div>
-
-        <form id="volunteer-form" class="volunteer-form">
-          <input type="hidden" id="volunteer-id" />
-
-          <label>Event
-            <select id="volunteer-event" required>
-              <option value="">Loading events...</option>
-            </select>
-          </label>
-
-          <label>Your name
-            <input id="volunteer-name" type="text" maxlength="150" required />
-          </label>
-
-          <label>Email <span>(optional)</span>
-            <input id="volunteer-email" type="email" maxlength="190" />
-          </label>
-
-          <label>Phone <span>(optional)</span>
-            <input id="volunteer-phone" type="tel" maxlength="40" />
-          </label>
-
-          <label>What can you help with?
-            <input id="volunteer-role" type="text" maxlength="150" placeholder="Setup, food, soccer, cleanup..." />
-          </label>
-
-          <label class="volunteer-notes-field">Notes
-            <textarea id="volunteer-notes" rows="3" placeholder="Anything else the family should know"></textarea>
-          </label>
-
-          <div class="volunteer-form-actions">
-            <button class="button button-primary" id="volunteer-save-button" type="submit">Add Volunteer</button>
-            <button class="button button-outline" id="volunteer-cancel-button" type="button" hidden>Cancel Edit</button>
-          </div>
-          <p id="volunteer-form-message" class="form-message" role="status"></p>
-        </form>
+    <section class="section volunteer-sheet-section">
+      <div class="volunteer-sheet-frame">
+        <iframe
+          title="Vera Family Reunion volunteer spreadsheet"
+          src="https://docs.google.com/spreadsheets/d/1ljOELX8DFkImGa0darGSxvG3rEg7xgbx/edit?rm=minimal#gid=156811305"
+          loading="eager"
+          allow="clipboard-read; clipboard-write"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
       </div>
-
-      <div class="volunteer-list-heading">
-        <div>
-          <p class="eyebrow">Current list</p>
-          <h2>Who's Helping</h2>
-        </div>
-        <button class="button button-outline" type="button" id="volunteer-refresh-button">Refresh</button>
-      </div>
-
-      <div id="volunteer-loading" class="volunteer-empty">Loading volunteers...</div>
-
-      <div class="volunteer-table-wrap" id="volunteer-table-wrap" hidden>
-        <table class="volunteer-table">
-          <thead>
-            <tr>
-              <th>Event</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Role / Task</th>
-              <th>Notes</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="volunteer-table-body"></tbody>
-        </table>
-      </div>
-
-      <div id="volunteer-empty" class="volunteer-empty" hidden>No volunteers have been added yet. Be the first.</div>
+      <p class="volunteer-sheet-help">If the spreadsheet does not load or editing is awkward on your phone, tap <strong>Open in Google Sheets</strong> above.</p>
     </section>
   </main>
 
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
-  <script src="js/main.js"></script>
-  <script src="js/volunteers.js"></script>
+  <script src="js/main.js?v=20260830-volunteers-sheet1"></script>
 </body>
 </html>
