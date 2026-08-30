@@ -517,6 +517,109 @@
       .song-preview-frame { border-radius:9px; }
     }
 
+  
+
+    /* Mobile interaction fixes: unclipped menus, compact form, stable list */
+    @media (max-width:700px) {
+      /* The table already fits the phone width, so vertical popovers must not be clipped. */
+      #music-table-wrap {
+        overflow: visible !important;
+      }
+
+      .music-more-menu.open-up .music-more-popover {
+        top: auto !important;
+        bottom: 36px !important;
+      }
+
+      /* Shorter Add/Edit form while keeping comfortable touch targets. */
+      .music-form-card {
+        padding: 16px 14px !important;
+        gap: 12px !important;
+        margin-bottom: 28px !important;
+      }
+      .music-form-card > div:first-child .eyebrow {
+        margin-bottom: 4px;
+      }
+      .music-form-card > div:first-child h2 {
+        font-size: 28px !important;
+        line-height: 1.05;
+        margin: 0 0 6px !important;
+      }
+      .music-form-card > div:first-child > p:last-child {
+        margin: 0 !important;
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .music-form {
+        grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+        gap: 10px 8px !important;
+      }
+      .music-song-label,
+      .music-youtube-label,
+      .music-form-actions,
+      .music-form .form-message {
+        grid-column: 1 / -1 !important;
+      }
+      .music-artist-label,
+      .music-category-label {
+        grid-column: auto !important;
+        min-width: 0;
+      }
+      .music-form label {
+        gap: 4px !important;
+        font-size: 10px !important;
+      }
+      .music-form input,
+      .music-form select {
+        min-height: 43px !important;
+        padding: 9px 10px !important;
+        font-size: 13px !important;
+        border-radius: 9px !important;
+      }
+      .music-youtube-input-row {
+        grid-template-columns: minmax(0,1fr) auto !important;
+        gap: 6px !important;
+      }
+      .music-youtube-search-button {
+        width: auto !important;
+        min-height: 43px !important;
+        padding: 8px 10px !important;
+        font-size: 10px !important;
+      }
+      .music-youtube-help {
+        display: none !important;
+      }
+      .music-selected-youtube {
+        margin-top: 5px !important;
+        padding: 6px !important;
+      }
+      .music-selected-youtube img {
+        width: 64px !important;
+        height: 36px !important;
+      }
+      .music-selected-youtube strong {
+        font-size: 10px;
+      }
+      .music-selected-youtube small {
+        display: none;
+      }
+      .music-form-actions {
+        gap: 7px !important;
+        margin-top: 1px;
+      }
+      .music-form-actions .button {
+        min-height: 42px;
+        padding: 9px 14px;
+        font-size: 11px;
+      }
+      .music-form .form-message {
+        margin: 0 !important;
+        font-size: 10px;
+        line-height: 1.25;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -565,15 +668,15 @@
         </div>
 
         <form id="music-request-form" class="volunteer-form music-form">
-          <label>Song name
+          <label class="music-song-label">Song name
             <input id="song-name" type="text" maxlength="255" required placeholder="Song title" />
           </label>
 
-          <label>Artist <span>(optional)</span>
+          <label class="music-artist-label">Artist <span>(optional)</span>
             <input id="artist-name" type="text" maxlength="255" placeholder="Artist name" />
           </label>
 
-          <label>Category
+          <label class="music-category-label">Category
             <select id="music-category">
               <option value="">Uncategorized</option>
             </select>
@@ -678,7 +781,7 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260830-rowpreview1"></script>
+  <script src="js/music-requests.js?v=20260830-mobileinteraction1"></script>
 
   <div class="song-preview-modal" id="song-preview-modal" hidden>
     <div class="song-preview-backdrop" data-song-preview-close></div>

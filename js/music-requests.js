@@ -507,21 +507,62 @@ document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
   });
 
+  tbody.addEventListener('toggle', event => {
+    const details = event.target;
+    if (!(details instanceof HTMLDetailsElement) || !details.classList.contains('music-more-menu')) return;
+
+    if (!details.open) {
+      details.classList.remove('open-up');
+      return;
+    }
+
+    tbody.querySelectorAll('.music-more-menu[open]').forEach(other => {
+      if (other !== details) other.removeAttribute('open');
+    });
+
+    requestAnimationFrame(() => {
+      const popover = details.querySelector('.music-more-popover');
+      if (!popover) return;
+      const rect = popover.getBoundingClientRect();
+      const needsUp = rect.bottom > window.innerHeight - 10;
+      details.classList.toggle('open-up', needsUp);
+    });
+  }, true);
+
   tbody.addEventListener('click', async event => {
     const moveButton = event.target.closest('.move-music-request');
     if (moveButton) {
+      const requestId = Number(moveButton.dataset.id);
       const swapId = Number(moveButton.dataset.swapId);
-      if (!swapId) return;
-      moveButton.disabled = true;
+      if (!requestId || !swapId) return;
+
+      const firstIndex = requests.findIndex(item => Number(item.request_id) === requestId);
+      const secondIndex = requests.findIndex(item => Number(item.request_id) === swapId);
+      if (firstIndex < 0 || secondIndex < 0) return;
+
+      // Update only the list in place. No loading screen and no page-level refresh effect.
+      [requests[firstIndex], requests[secondIndex]] = [requests[secondIndex], requests[firstIndex]];
+      renderRequests();
+
       try {
         const response = await fetch('/api/music-requests', {
-          method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
-          body: JSON.stringify({ request_id: Number(moveButton.dataset.id), swap_with_request_id: swapId })
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ request_id: requestId, swap_with_request_id: swapId })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Unable to move song.');
-        await loadRequests();
-      } catch (error) { alert(error.message); moveButton.disabled = false; }
+      } catch (error) {
+        // Put the two songs back if the database update fails.
+        const currentFirst = requests.findIndex(item => Number(item.request_id) === requestId);
+        const currentSecond = requests.findIndex(item => Number(item.request_id) === swapId);
+        if (currentFirst >= 0 && currentSecond >= 0) {
+          [requests[currentFirst], requests[currentSecond]] = [requests[currentSecond], requests[currentFirst]];
+          renderRequests();
+        }
+        alert(error.message);
+      }
       return;
     }
 
@@ -604,6 +645,10 @@ document.addEventListener('DOMContentLoaded', () => {
     playerCard.hidden = true;
     if (youtubePlayer && typeof youtubePlayer.pauseVideo === 'function') youtubePlayer.pauseVideo();
   });
+  window.addEventListener('scroll', () => {
+    tbody.querySelectorAll('.music-more-menu[open]').forEach(details => details.removeAttribute('open'));
+  }, { passive: true });
+
   document.getElementById('music-refresh-button').addEventListener('click', loadRequests);
   document.querySelectorAll('[data-song-preview-close]').forEach(element => {
     element.addEventListener('click', closeSongPreview);
