@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectedYouTube = document.getElementById('music-selected-youtube');
   const selectedYouTubeThumb = document.getElementById('music-selected-youtube-thumb');
   const selectedYouTubeTitle = document.getElementById('music-selected-youtube-title');
+  const songPreviewModal = document.getElementById('song-preview-modal');
+  const songPreviewTitle = document.getElementById('song-preview-title');
+  const songPreviewArtist = document.getElementById('song-preview-artist');
+  const songPreviewFrame = document.getElementById('song-preview-frame');
 
   let requests = [];
   let categories = [];
@@ -62,6 +66,29 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (['shorts', 'embed', 'live'].includes(parts[0])) id = parts[1] || null;
     }
     return id && /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
+  }
+
+
+  function closeSongPreview() {
+    if (!songPreviewModal) return;
+    songPreviewModal.hidden = true;
+    songPreviewFrame.removeAttribute('src');
+    document.body.style.overflow = '';
+  }
+
+  function openSongPreview(request) {
+    if (!request) return;
+    const videoId = request.youtube_video_id || extractYouTubeVideoId(request.youtube_url);
+    if (!videoId) {
+      alert('Missing YouTube link.');
+      return;
+    }
+
+    songPreviewTitle.textContent = request.song_name || 'Song Preview';
+    songPreviewArtist.textContent = request.artist_name || '';
+    songPreviewFrame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0`;
+    songPreviewModal.hidden = false;
+    document.body.style.overflow = 'hidden';
   }
 
 
@@ -318,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <details class="music-more-menu">
               <summary aria-label="More options" title="More options">⋮</summary>
               <div class="music-more-popover">
+                <button type="button" class="preview-music-request" data-id="${request.request_id}" ${hasValidYouTube ? '' : 'disabled title="Missing YouTube link"'}>Preview</button>
                 <button type="button" class="edit-music-request" data-id="${request.request_id}">Edit</button>
                 <button type="button" class="delete-music-request danger" data-id="${request.request_id}">Delete</button>
               </div>
@@ -497,6 +525,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const previewButton = event.target.closest('.preview-music-request');
+    if (previewButton) {
+      previewButton.closest('details')?.removeAttribute('open');
+      const request = requests.find(item => String(item.request_id) === previewButton.dataset.id);
+      if (request) openSongPreview(request);
+      return;
+    }
+
     const editButton = event.target.closest('.edit-music-request');
     if (editButton) {
       editButton.closest('details')?.removeAttribute('open');
@@ -569,5 +605,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (youtubePlayer && typeof youtubePlayer.pauseVideo === 'function') youtubePlayer.pauseVideo();
   });
   document.getElementById('music-refresh-button').addEventListener('click', loadRequests);
+  document.querySelectorAll('[data-song-preview-close]').forEach(element => {
+    element.addEventListener('click', closeSongPreview);
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && songPreviewModal && !songPreviewModal.hidden) {
+      closeSongPreview();
+    }
+  });
+
   loadRequests();
 });
