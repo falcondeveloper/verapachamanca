@@ -92,23 +92,30 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="music-song-cell">
             <strong>${escapeHtml(request.song_name)}</strong>
             <span class="music-order-actions">
-              <button type="button" class="table-action move-music-request" data-id="${request.request_id}" data-direction="up" ${index === 0 ? 'disabled' : ''}>↑ Up</button>
-              <button type="button" class="table-action move-music-request" data-id="${request.request_id}" data-direction="down" ${index === requests.length - 1 ? 'disabled' : ''}>↓ Down</button>
+              <button type="button" class="table-action move-music-request" aria-label="Move up" title="Move up" data-id="${request.request_id}" data-direction="up" ${index === 0 ? 'disabled' : ''}>↑<span class="move-label"> Up</span></button>
+              <button type="button" class="table-action move-music-request" aria-label="Move down" title="Move down" data-id="${request.request_id}" data-direction="down" ${index === requests.length - 1 ? 'disabled' : ''}>↓<span class="move-label"> Down</span></button>
             </span>
           </div>
         </td>
         <td>
           <div class="music-artist-cell">
-            <span>
-              ${escapeHtml(request.artist_name || '—')}
+            <span class="music-artist-meta">
+              <span>${escapeHtml(request.artist_name || '—')}</span>
               ${hasValidYouTube
-                ? `<br><a class="music-youtube-link" href="${escapeHtml(request.youtube_url)}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>`
-                : '<br><span class="music-missing-link">Missing YouTube link</span>'}
+                ? `<a class="music-youtube-link" href="${escapeHtml(request.youtube_url)}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>`
+                : '<span class="music-missing-link">Missing Link</span>'}
             </span>
             <span class="music-row-actions">
               <button type="button" class="table-action edit-music-request" data-id="${request.request_id}">Edit</button>
               <button type="button" class="table-action danger delete-music-request" data-id="${request.request_id}">Delete</button>
             </span>
+            <details class="music-more-menu">
+              <summary aria-label="More options" title="More options">⋮</summary>
+              <div class="music-more-popover">
+                <button type="button" class="edit-music-request" data-id="${request.request_id}">Edit</button>
+                <button type="button" class="delete-music-request danger" data-id="${request.request_id}">Delete</button>
+              </div>
+            </details>
           </div>
         </td>`;
       tbody.appendChild(tr);
@@ -321,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const editButton = event.target.closest('.edit-music-request');
     if (editButton) {
+      editButton.closest('details')?.removeAttribute('open');
       const request = requests.find(item => String(item.request_id) === editButton.dataset.id);
       if (request) beginEdit(request);
       return;
@@ -328,6 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const deleteButton = event.target.closest('.delete-music-request');
     if (!deleteButton) return;
+    deleteButton.closest('details')?.removeAttribute('open');
 
     const request = requests.find(item => String(item.request_id) === deleteButton.dataset.id);
     if (!request) return;

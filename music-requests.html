@@ -53,6 +53,40 @@
       .music-list-buttons { width:100%; justify-content:flex-start; }
       .music-order-actions .table-action { min-width:48px; padding-left:7px; padding-right:7px; }
     }
+
+
+    /* Compact mobile music list */
+    .music-more-menu { display:none; position:relative; flex:0 0 auto; }
+    .music-more-menu summary { list-style:none; cursor:pointer; user-select:none; }
+    .music-more-menu summary::-webkit-details-marker { display:none; }
+    .music-more-popover { position:absolute; z-index:40; right:0; top:30px; min-width:92px; padding:5px; border:1px solid var(--line); border-radius:9px; background:#fff; box-shadow:0 6px 20px rgba(0,0,0,.18); }
+    .music-more-popover button { display:block; width:100%; padding:7px 9px; border:0; background:transparent; text-align:left; font:inherit; font-weight:700; color:#24513e; cursor:pointer; }
+    .music-more-popover button.danger { color:#9c2f22; }
+
+    @media (max-width:700px) {
+      .music-table th,.music-table td { padding:6px 6px !important; vertical-align:middle; }
+      .music-table th { font-size:10px; }
+      .music-table td { font-size:10px; line-height:1.2; }
+      .music-song-cell,.music-artist-cell { flex-direction:row !important; align-items:center !important; gap:5px; min-height:30px; }
+      .music-song-cell strong { font-size:10.5px; line-height:1.18; }
+      .music-order-actions { gap:2px; margin-left:auto; }
+      .music-order-actions .table-action { min-width:25px !important; width:25px; height:25px; padding:0 !important; border-radius:6px; font-size:14px; line-height:25px; }
+      .move-label { display:none; }
+      .music-artist-meta { display:flex; min-width:0; flex:1 1 auto; align-items:center; gap:4px; flex-wrap:wrap; }
+      .music-youtube-link,.music-missing-link { display:inline !important; margin:0 !important; font-size:9px !important; line-height:1.1; }
+      .music-missing-link { white-space:nowrap; }
+      .music-row-actions { display:none !important; }
+      .music-more-menu { display:block; margin-left:auto; }
+      .music-more-menu summary { width:27px; height:27px; border-radius:50%; text-align:center; font-size:21px; line-height:23px; font-weight:700; color:#24513e; }
+      .music-more-menu[open] summary { background:#eef3ef; }
+      .music-more-popover { top:27px; }
+      .music-more-popover button { font-size:11px; }
+      .music-play-summary { margin-bottom:8px; font-size:11px; }
+      .music-list-heading { margin-bottom:12px; }
+      .music-list-heading h2 { margin-bottom:3px; }
+      .music-list-heading p { margin:0; }
+    }
+
   </style>
 </head>
 <body>
@@ -169,6 +203,6 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260830-orderplay1"></script>
+  <script src="js/music-requests.js?v=20260830-compactmobile1"></script>
 </body>
 </html>
