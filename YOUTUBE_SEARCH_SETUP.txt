@@ -1,0 +1,15 @@
+VeraPachamanca YouTube Search
+
+Files in this update:
+- music-requests.html
+- js/music-requests.js
+- api/youtube-search.js
+- lib/credentials.js
+
+The YouTube API key is stored in lib/credentials.js as requested.
+The browser calls /api/youtube-search; the API key is not placed in browser JavaScript.
+
+Google Cloud requirement:
+- YouTube Data API v3 must be enabled for the Google Cloud project associated with the key.
+
+No MySQL changes are required for this feature.

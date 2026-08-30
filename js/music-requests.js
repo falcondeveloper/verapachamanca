@@ -22,6 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const playerCard = document.getElementById('music-player-card');
   const playerMessage = document.getElementById('music-player-message');
   const hidePlayerButton = document.getElementById('music-hide-player');
+  const youtubeSearchButton = document.getElementById('music-youtube-search-button');
+  const youtubeSearchModal = document.getElementById('youtube-search-modal');
+  const youtubeSearchQuery = document.getElementById('youtube-search-query');
+  const youtubeSearchSubmit = document.getElementById('youtube-search-submit');
+  const youtubeSearchStatus = document.getElementById('youtube-search-status');
+  const youtubeSearchResults = document.getElementById('youtube-search-results');
+  const youtubeSearchPreview = document.getElementById('youtube-search-preview');
+  const youtubeSearchPreviewFrame = document.getElementById('youtube-search-preview-frame');
+  const selectedYouTube = document.getElementById('music-selected-youtube');
+  const selectedYouTubeThumb = document.getElementById('music-selected-youtube-thumb');
+  const selectedYouTubeTitle = document.getElementById('music-selected-youtube-title');
 
   let requests = [];
   let categories = [];
@@ -53,6 +64,121 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (['shorts', 'embed', 'live'].includes(parts[0])) id = parts[1] || null;
     }
     return id && /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
+  }
+
+
+  function showSelectedYouTube(videoId, title = '') {
+    if (!videoId) {
+      selectedYouTube.hidden = true;
+      selectedYouTubeThumb.removeAttribute('src');
+      selectedYouTubeTitle.textContent = 'YouTube video selected';
+      return;
+    }
+    selectedYouTubeThumb.src = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+    selectedYouTubeTitle.textContent = title || 'YouTube video selected';
+    selectedYouTube.hidden = false;
+  }
+
+  function syncSelectedYouTubeFromInput() {
+    const videoId = extractYouTubeVideoId(youtubeInput.value);
+    showSelectedYouTube(videoId);
+  }
+
+  function closeYouTubeSearch() {
+    youtubeSearchModal.hidden = true;
+    youtubeSearchPreview.hidden = true;
+    youtubeSearchPreviewFrame.removeAttribute('src');
+    document.body.style.overflow = '';
+  }
+
+  function previewYouTubeResult(videoId) {
+    if (!videoId) return;
+    youtubeSearchPreviewFrame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0`;
+    youtubeSearchPreview.hidden = false;
+    youtubeSearchPreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function renderYouTubeSearchResults(results) {
+    youtubeSearchResults.innerHTML = '';
+    if (!results.length) {
+      youtubeSearchResults.innerHTML = '<p class="volunteer-empty">No YouTube videos matched that search. Try changing the song or artist.</p>';
+      return;
+    }
+
+    for (const result of results) {
+      const card = document.createElement('article');
+      card.className = 'youtube-result';
+      card.innerHTML = `
+        <button class="youtube-result-thumb youtube-preview-result" type="button" data-video-id="${escapeHtml(result.video_id)}" aria-label="Preview ${escapeHtml(result.title)}">
+          <img src="${escapeHtml(result.thumbnail_url)}" alt="" loading="lazy">
+        </button>
+        <div class="youtube-result-copy">
+          <strong>${escapeHtml(result.title)}</strong>
+          <small>${escapeHtml(result.channel_title || 'YouTube')}</small>
+        </div>
+        <div class="youtube-result-actions">
+          <button class="table-action youtube-preview-result" type="button" data-video-id="${escapeHtml(result.video_id)}">Preview</button>
+          <button class="table-action youtube-use-result" type="button"
+            data-video-id="${escapeHtml(result.video_id)}"
+            data-youtube-url="${escapeHtml(result.youtube_url)}"
+            data-title="${escapeHtml(result.title)}">Use This</button>
+        </div>`;
+      youtubeSearchResults.appendChild(card);
+    }
+  }
+
+  async function searchYouTube() {
+    const query = youtubeSearchQuery.value.trim();
+    if (!query) {
+      youtubeSearchStatus.textContent = 'Enter a song name or artist.';
+      youtubeSearchQuery.focus();
+      return;
+    }
+
+    youtubeSearchSubmit.disabled = true;
+    youtubeSearchSubmit.textContent = 'Searching...';
+    youtubeSearchStatus.textContent = 'Searching YouTube...';
+    youtubeSearchResults.innerHTML = '';
+    youtubeSearchPreview.hidden = true;
+    youtubeSearchPreviewFrame.removeAttribute('src');
+
+    try {
+      const response = await fetch(`/api/youtube-search?q=${encodeURIComponent(query)}`, {
+        credentials: 'same-origin'
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'YouTube search failed.');
+      const results = Array.isArray(data.results) ? data.results : [];
+      youtubeSearchStatus.textContent = results.length ? `${results.length} matches found.` : 'No matches found.';
+      renderYouTubeSearchResults(results);
+    } catch (error) {
+      youtubeSearchStatus.textContent = error.message;
+      youtubeSearchResults.innerHTML = '';
+    } finally {
+      youtubeSearchSubmit.disabled = false;
+      youtubeSearchSubmit.textContent = 'Search';
+    }
+  }
+
+  function openYouTubeSearch() {
+    const song = songInput.value.trim();
+    const artist = artistInput.value.trim();
+    const query = [song, artist].filter(Boolean).join(' ');
+    if (!query) {
+      message.textContent = 'Enter a song name first, then tap Search YouTube.';
+      songInput.focus();
+      return;
+    }
+
+    youtubeSearchQuery.value = query;
+    youtubeSearchStatus.textContent = '';
+    youtubeSearchResults.innerHTML = '';
+    youtubeSearchPreview.hidden = true;
+    youtubeSearchPreviewFrame.removeAttribute('src');
+    youtubeSearchModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    youtubeSearchQuery.focus();
+    searchYouTube();
   }
 
   function fillCategoryLists() {
@@ -195,6 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
     editingRequestId = null;
     form.reset();
     categoryInput.value = '';
+    showSelectedYouTube(null);
     saveButton.textContent = 'Add Song';
     cancelButton.hidden = true;
     message.textContent = '';
@@ -206,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     artistInput.value = request.artist_name || '';
     categoryInput.value = request.category_id ? String(request.category_id) : '';
     youtubeInput.value = request.youtube_url || '';
+    showSelectedYouTube(request.youtube_video_id || extractYouTubeVideoId(request.youtube_url));
     saveButton.textContent = 'Save Changes';
     cancelButton.hidden = false;
     message.textContent = `Editing: ${request.song_name}`;
@@ -297,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) throw new Error(data.error || (isEditing ? 'Unable to save changes.' : 'Unable to add music request.'));
       const successText = isEditing ? 'Changes saved.' : 'Song added at the end of the list.';
       editingRequestId = null;
-      form.reset(); categoryInput.value = ''; cancelButton.hidden = true; saveButton.textContent = 'Add Song'; message.textContent = successText;
+      form.reset(); categoryInput.value = ''; showSelectedYouTube(null); cancelButton.hidden = true; saveButton.textContent = 'Add Song'; message.textContent = successText;
       await loadRequests(); songInput.focus();
     } catch (error) { message.textContent = error.message; }
     finally { saveButton.disabled = false; saveButton.textContent = editingRequestId ? 'Save Changes' : 'Add Song'; }
@@ -356,6 +484,42 @@ document.addEventListener('DOMContentLoaded', () => {
       if (editingRequestId === Number(request.request_id)) resetEditMode();
       await loadRequests();
     } catch (error) { alert(error.message); deleteButton.disabled = false; }
+  });
+
+  youtubeSearchButton.addEventListener('click', openYouTubeSearch);
+  youtubeSearchSubmit.addEventListener('click', searchYouTube);
+  youtubeSearchQuery.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      searchYouTube();
+    }
+  });
+  youtubeInput.addEventListener('input', syncSelectedYouTubeFromInput);
+
+  youtubeSearchModal.addEventListener('click', event => {
+    if (event.target.closest('[data-youtube-close]')) {
+      closeYouTubeSearch();
+      return;
+    }
+
+    const previewButton = event.target.closest('.youtube-preview-result');
+    if (previewButton) {
+      previewYouTubeResult(previewButton.dataset.videoId);
+      return;
+    }
+
+    const useButton = event.target.closest('.youtube-use-result');
+    if (useButton) {
+      youtubeInput.value = useButton.dataset.youtubeUrl || '';
+      showSelectedYouTube(useButton.dataset.videoId, useButton.dataset.title || 'YouTube video selected');
+      closeYouTubeSearch();
+      message.textContent = 'YouTube video selected. Choose a category if needed, then tap Add Song or Save Changes.';
+      youtubeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !youtubeSearchModal.hidden) closeYouTubeSearch();
   });
 
   clearChecksButton.addEventListener('click', () => { checkedIds.clear(); renderRequests(); });
