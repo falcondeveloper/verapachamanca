@@ -16,6 +16,104 @@
 
   <link rel="stylesheet" href="css/styles.css" />
   <script src="js/site-access.js"></script>
+
+  <style>
+    .reunion-menu-intro {
+      max-width: 860px;
+      margin: 0 auto 26px;
+      text-align: center;
+    }
+    .reunion-menu-intro p {
+      margin: 8px 0 0;
+      color: #5b6b61;
+      line-height: 1.55;
+    }
+    .reunion-menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+    .reunion-menu-card {
+      padding: 22px;
+      border: 1px solid rgba(47, 85, 64, .18);
+      border-radius: 16px;
+      background: #fffdf8;
+      box-shadow: 0 8px 24px rgba(44, 66, 54, .07);
+    }
+    .reunion-menu-card h3 {
+      margin: 0 0 14px;
+      color: #315743;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+    .reunion-menu-card ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .reunion-menu-card li + li {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(47, 85, 64, .10);
+    }
+    .reunion-menu-card strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #3d2c20;
+      font-family: "Libre Baskerville", serif;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .reunion-menu-card span {
+      display: block;
+      color: #59675f;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .reunion-menu-note {
+      max-width: 1050px;
+      margin: 22px auto 0;
+      padding: 15px 18px;
+      border-radius: 14px;
+      background: #f0f5ef;
+      color: #40594b;
+      text-align: center;
+      font-weight: 600;
+    }
+    @media (max-width: 760px) {
+      .page-hero {
+        padding-bottom: 12px !important;
+      }
+      .reunion-menu-intro {
+        margin-bottom: 18px;
+      }
+      .reunion-menu-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .reunion-menu-card {
+        padding: 17px 15px;
+        border-radius: 13px;
+      }
+      .reunion-menu-card h3 {
+        font-size: 18px;
+        margin-bottom: 11px;
+      }
+      .reunion-menu-card li + li {
+        margin-top: 11px;
+        padding-top: 11px;
+      }
+      .reunion-menu-card strong {
+        font-size: 14px;
+      }
+      .reunion-menu-card span {
+        font-size: 13px;
+      }
+    }
+  </style>
+
 </head>
 
 <body>
@@ -87,18 +185,137 @@
       </div>
 
 
-      <div class="upload-callout">
-  <div>
-    <h2>Chancho al Horno</h2>
+      <div class="reunion-menu-intro">
+        <p>A traditional Peruvian Sunday feast inspired by the flavors of the Andes, the coast, and classic family gatherings.</p>
+      </div>
 
-    <p><em>Traditional Peruvian slow-roasted spiced pork shoulder, served with garlic white rice, boiled gold potatoes, baked sweet potato, corn on the cob (steamed in husks), fresh sarsa criolla, humitas dulces, and fresh ají verde.</p>
+      <div class="reunion-menu-grid">
 
-    <p>Chancho al horno tradicional marinado al estilo peruano, acompañado de arroz blanco al ajo, papas Yukon Gold hervidas, camote al horno, choclo (cocido al vapor en su propia hoja), salsa criolla fresca, humitas dulces y ají verde fresco.</p>
-  </em> </p>
+        <article class="reunion-menu-card">
+          <h3>Main Entrées</h3>
+          <ul>
+            <li>
+              <strong>Anticucho-Style Roast Meats</strong>
+              <span>Slow-roasted pork shoulder marinated in a smoky, savory glaze of ají panca, garlic, red wine vinegar, cumin, and oregano.</span>
+            </li>
+            <li>
+              <strong>Pachamanca-Style Roast Meats</strong>
+              <span>Slow-roasted pork shoulder and beef infused with traditional Andean herbs, fragrant huacatay, garlic, beer, and lime.</span>
+            </li>
+          </ul>
+        </article>
 
-<p>  <h3>Vegetarian Options Available</h3></p>
-    </div>
-</div>
+        <article class="reunion-menu-card">
+          <h3>Vegetarian Feature</h3>
+          <ul>
+            <li>
+              <strong>Papas a la Huancaína</strong>
+              <span>Tender sliced yellow potatoes served chilled or at room temperature, covered in a velvety ají amarillo and queso fresco sauce, and garnished with quartered hard-boiled eggs and Peruvian botija olives.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="reunion-menu-card">
+          <h3>Starches &amp; Warm Sides</h3>
+          <ul>
+            <li>
+              <strong>Arroz con Ajo</strong>
+              <span>Classic Peruvian long-grain white rice gently simmered with garlic and olive oil.</span>
+            </li>
+            <li>
+              <strong>Plátanos Maduros Asados</strong>
+              <span>Baked sweet ripe plantains, caramelized and served warm.</span>
+            </li>
+            <li>
+              <strong>Habas al Huacatay</strong>
+              <span>Tender boiled broad beans (fava beans) tossed with olive oil, garlic, and aromatic Andean black mint (huacatay).</span>
+            </li>
+            <li>
+              <strong>Grilled Corn &amp; Summer Vegetables</strong>
+              <span>Sweet corn on the cob, sliced bell peppers, and mushrooms braised and charred over the grill.</span>
+            </li>
+            <li>
+              <strong>Papas y Camotes</strong>
+              <span>Sliced boiled yellow potatoes and sweet potatoes served warm.</span>
+            </li>
+            <li>
+              <strong>Cauliflower Rice</strong>
+              <span>Savory seasoned cauliflower rice for a lighter, vegan option.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="reunion-menu-card">
+          <h3>Salads &amp; Relishes</h3>
+          <ul>
+            <li>
+              <strong>Ensalada Fresca</strong>
+              <span>Crisp chopped romaine lettuce, sliced cucumbers, and radishes topped with sliced avocado and a bright lime–olive oil vinaigrette.</span>
+            </li>
+            <li>
+              <strong>Sarsa Criolla</strong>
+              <span>Classic Peruvian relish of ice-crisped shaved red onions, julienned plum tomatoes, sliced chiles, and fresh cilantro tossed with lime juice and vinegar.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="reunion-menu-card">
+          <h3>Signature Table Sauce</h3>
+          <ul>
+            <li>
+              <strong>Ají Verde</strong>
+              <span>Chilled, creamy Peruvian green sauce blended with fresh cilantro, ají amarillo, garlic, cottage cheese, and lime.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="reunion-menu-card">
+          <h3>Grazing Snacks</h3>
+          <ul>
+            <li>
+              <strong>Cancha Serrana</strong>
+              <span>Pan-toasted crunchy Andean chulpe corn seasoned with sea salt.</span>
+            </li>
+            <li>
+              <strong>Chifles</strong>
+              <span>Crispy salted plantain chips.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="reunion-menu-card">
+          <h3>Dessert</h3>
+          <ul>
+            <li>
+              <strong>Humitas Dulces</strong>
+              <span>Hand-wrapped steamed sweet corn tamales spiced with cinnamon and anise, with raisins, served warm.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="reunion-menu-card">
+          <h3>Bar &amp; Beverage Station</h3>
+          <ul>
+            <li>
+              <strong>Signature Cocktails</strong>
+              <span>Freshly shaken classic Pisco Sours and refreshing Chilcanos made with Peruvian pisco, ginger ale, fresh lime juice, and bitters.</span>
+            </li>
+            <li>
+              <strong>Traditional &amp; Non-Alcoholic</strong>
+              <span>Chicha Morada (spiced purple corn punch), Inca Kola, and bottled water.</span>
+            </li>
+            <li>
+              <strong>Beer</strong>
+              <span>Chilled Coors beer.</span>
+            </li>
+          </ul>
+        </article>
+
+      </div>
+
+      <div class="reunion-menu-note">
+        Vegetarian and vegan-friendly selections are available throughout the menu.
+      </div>
 
     </section>
 
