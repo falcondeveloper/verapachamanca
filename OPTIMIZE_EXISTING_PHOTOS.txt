@@ -1,0 +1,25 @@
+VeraPachamanca - Optimize Existing Photos
+
+Open:
+  https://verapachamanca.com/optimize-photos.html
+
+How it works:
+- Requires the existing family access cookie and a selected/logged-in family user.
+- Loads ONLY vera_photos rows where media_type = 'photo'.
+- Rejects video extensions again before touching GoDaddy storage.
+- Checks one photo per API request.
+- Photos <= 1 MB are skipped.
+- Oversized JPEG/PNG/WebP photos are resized/recompressed, targeting under 1 MB.
+- The same filename is retained, so image_url/database rows do not change.
+- Each replacement is uploaded to a temporary file first.
+- The original is renamed to a temporary backup before the new image is installed.
+- The backup is deleted only after the replacement size is verified.
+- Re-running the page is safe: photos already <= 1 MB are simply skipped.
+
+VIDEOS:
+- media_type='video' rows are never returned by the API.
+- MP4/MOV/WebM/M4V and other video extensions are rejected as a second safeguard.
+
+No SQL changes are required.
+
+This uses sharp, already added by the server-side photo resize update.

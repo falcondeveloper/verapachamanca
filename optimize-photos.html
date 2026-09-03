@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <title>Optimize Existing Photos | Vera Pachamanca</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/site-access.js"></script>
+  <style>
+    .optimize-wrap { max-width:900px; margin:0 auto; padding:28px 18px 60px; }
+    .optimize-card { background:#fffdf8; border:1px solid #d9ddd7; border-radius:16px; padding:20px; margin-bottom:16px; }
+    .optimize-warning { border-left:5px solid #b85635; background:#fff4ec; }
+    .optimize-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .optimize-actions button { min-height:44px; }
+    .optimize-progress { margin:16px 0 8px; height:16px; background:#e5e8e3; border-radius:999px; overflow:hidden; }
+    .optimize-progress > div { height:100%; width:0; background:#2f674f; transition:width .2s ease; }
+    .optimize-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:14px; }
+    .optimize-stat { padding:10px; border-radius:10px; background:#f1f4ef; text-align:center; }
+    .optimize-stat strong { display:block; font-size:20px; }
+    .optimize-log { max-height:420px; overflow:auto; border:1px solid #e0e2df; border-radius:12px; background:#fff; }
+    .optimize-log-row { display:grid; grid-template-columns:70px 1fr auto; gap:10px; padding:9px 11px; border-bottom:1px solid #eceeeb; font-size:12px; align-items:start; }
+    .optimize-log-row:last-child { border-bottom:0; }
+    .optimize-log-row .good { color:#226042; font-weight:700; }
+    .optimize-log-row .skip { color:#66736b; }
+    .optimize-log-row .bad { color:#a4382a; font-weight:700; }
+    @media(max-width:700px) {
+      .optimize-wrap { padding:14px 10px 40px; }
+      .optimize-card { padding:14px; border-radius:12px; }
+      .optimize-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .optimize-log-row { grid-template-columns:48px 1fr; }
+      .optimize-log-row > :last-child { grid-column:2; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header solid-header">
+    <a class="brand" href="index.html"><span class="brand-mark">VP</span><span><strong>verapachamanca.com</strong><small>Vera Family Reunion</small></span></a>
+  </header>
+
+  <main class="optimize-wrap">
+    <section class="optimize-card">
+      <p class="eyebrow">PHOTO MAINTENANCE</p>
+      <h1>Optimize Existing Photos</h1>
+      <p>This checks existing database photos one at a time. Photos over 1 MB are reduced and replaced using the same filename, so the gallery links do not change.</p>
+    </section>
+
+    <section class="optimize-card optimize-warning">
+      <strong>Videos are excluded.</strong>
+      <p style="margin-bottom:0">This tool only loads rows where <code>media_type = 'photo'</code>, then checks the file extension again before touching storage. MP4, MOV, WebM, M4V and other video files are never optimized by this tool.</p>
+    </section>
+
+    <section class="optimize-card">
+      <div class="optimize-actions">
+        <button class="button button-primary" id="start-optimize" type="button">Start / Resume Optimization</button>
+        <button class="button button-outline" id="stop-optimize" type="button" disabled>Stop After Current Photo</button>
+        <a class="button button-outline" href="photos.html">Back to Photos</a>
+      </div>
+
+      <p id="optimize-message">Ready. Nothing has been changed yet.</p>
+      <div class="optimize-progress" aria-hidden="true"><div id="optimize-progress-bar"></div></div>
+
+      <div class="optimize-stats">
+        <div class="optimize-stat"><strong id="stat-checked">0</strong><span>Checked</span></div>
+        <div class="optimize-stat"><strong id="stat-optimized">0</strong><span>Optimized</span></div>
+        <div class="optimize-stat"><strong id="stat-small">0</strong><span>Already ≤ 1 MB</span></div>
+        <div class="optimize-stat"><strong id="stat-saved">0 MB</strong><span>Space Saved</span></div>
+      </div>
+    </section>
+
+    <section class="optimize-card">
+      <h2>Results</h2>
+      <div class="optimize-log" id="optimize-log">
+        <div class="optimize-log-row"><span>—</span><span>No photos checked yet.</span><span></span></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/require-login.js"></script>
+  <script>
+    (() => {
+      const startButton = document.getElementById('start-optimize');
+      const stopButton = document.getElementById('stop-optimize');
+      const message = document.getElementById('optimize-message');
+      const log = document.getElementById('optimize-log');
+      const progressBar = document.getElementById('optimize-progress-bar');
+      const statChecked = document.getElementById('stat-checked');
+      const statOptimized = document.getElementById('stat-optimized');
+      const statSmall = document.getElementById('stat-small');
+      const statSaved = document.getElementById('stat-saved');
+
+      let running = false;
+      let stopRequested = false;
+
+      const mb = bytes => `${(Number(bytes || 0) / 1024 / 1024).toFixed(1)} MB`;
+
+      function addLog(index, filename, result) {
+        if (log.dataset.started !== '1') {
+          log.innerHTML = '';
+          log.dataset.started = '1';
+        }
+
+        const row = document.createElement('div');
+        row.className = 'optimize-log-row';
+
+        let label = 'Skipped';
+        let cls = 'skip';
+        let detail = result.reason || '';
+
+        if (result.status === 'optimized') {
+          label = 'Optimized';
+          cls = 'good';
+          detail = `${mb(result.originalBytes)} → ${mb(result.storedBytes)}${result.reachedUnderOneMb ? '' : ' (still over 1 MB)'}`;
+        } else if (result.status === 'already-small') {
+          label = 'Already small';
+          cls = 'skip';
+          detail = mb(result.originalBytes);
+        } else if (result.status === 'unchanged') {
+          label = 'Unchanged';
+          detail = result.reason || mb(result.originalBytes);
+        } else if (result.status === 'error') {
+          label = 'Error';
+          cls = 'bad';
+          detail = result.error || 'Unknown error';
+        }
+
+        row.innerHTML = `<span>${index}</span><span title=""></span><span class="${cls}">${label}: ${detail}</span>`;
+        row.children[1].textContent = filename;
+        log.prepend(row);
+      }
+
+      async function fetchPhotos() {
+        const response = await fetch('/api/optimize-photos', { credentials: 'same-origin' });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Unable to load photo list.');
+        return data.photos || [];
+      }
+
+      async function optimizeOne(photoId) {
+        const response = await fetch('/api/optimize-photos', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photo_id: photoId })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Optimization request failed.');
+        return data;
+      }
+
+      startButton.addEventListener('click', async () => {
+        if (running) return;
+
+        running = true;
+        stopRequested = false;
+        startButton.disabled = true;
+        stopButton.disabled = false;
+
+        let checked = 0;
+        let optimized = 0;
+        let alreadySmall = 0;
+        let savedBytes = 0;
+
+        try {
+          message.textContent = 'Loading photo records...';
+          const photos = await fetchPhotos();
+
+          if (!photos.length) {
+            message.textContent = 'No active photo records were found. Videos were not included.';
+            return;
+          }
+
+          message.textContent = `${photos.length} photo records found. Checking one at a time...`;
+
+          for (let i = 0; i < photos.length; i += 1) {
+            if (stopRequested) {
+              message.textContent = `Stopped safely after ${checked} of ${photos.length} photos. Press Start / Resume to run again.`;
+              break;
+            }
+
+            const photo = photos[i];
+            message.textContent = `Checking ${i + 1} of ${photos.length}: ${photo.filename}`;
+
+            let result;
+            try {
+              result = await optimizeOne(photo.photo_id);
+            } catch (error) {
+              result = { status: 'error', error: error.message };
+            }
+
+            checked += 1;
+            if (result.status === 'optimized') {
+              optimized += 1;
+              savedBytes += Number(result.savedBytes || 0);
+            } else if (result.status === 'already-small') {
+              alreadySmall += 1;
+            }
+
+            addLog(i + 1, photo.filename, result);
+            statChecked.textContent = String(checked);
+            statOptimized.textContent = String(optimized);
+            statSmall.textContent = String(alreadySmall);
+            statSaved.textContent = mb(savedBytes);
+            progressBar.style.width = `${Math.round(((i + 1) / photos.length) * 100)}%`;
+
+            if (i === photos.length - 1) {
+              message.textContent = `Finished. ${checked} photos checked, ${optimized} optimized, ${mb(savedBytes)} saved. Videos were not touched.`;
+            }
+          }
+        } catch (error) {
+          message.textContent = error.message;
+        } finally {
+          running = false;
+          startButton.disabled = false;
+          stopButton.disabled = true;
+        }
+      });
+
+      stopButton.addEventListener('click', () => {
+        stopRequested = true;
+        stopButton.disabled = true;
+        message.textContent = 'Stopping after the current photo finishes...';
+      });
+    })();
+  </script>
+</body>
+</html>
