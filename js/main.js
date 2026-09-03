@@ -1,47 +1,32 @@
 
 document.addEventListener("DOMContentLoaded", () => {
+  const featuredPhotoTiles = document.querySelectorAll("[data-featured-photo-year]");
+  featuredPhotoTiles.forEach(async tile => {
+    const year = tile.dataset.featuredPhotoYear;
+    try {
+      const response = await fetch(`/api/photos?year=${encodeURIComponent(year)}`, {
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const headerPhoto = Array.isArray(data.photos)
+        ? data.photos.find(photo => photo.media_type !== "video" && photo.image_url)
+        : null;
+
+      if (headerPhoto) {
+        tile.style.backgroundImage = `url("${String(headerPhoto.image_url).replace(/["\\]/g, "\\$&")}")`;
+      }
+    } catch (_) {
+      // Keep the existing color background when a thumbnail is unavailable.
+    }
+  });
+
   const menuButton = document.querySelector(".menu-toggle");
   const nav = document.querySelector(".main-nav");
   if (menuButton && nav) {
-    // Keep Family Tree as a top-level navigation option on every page.
-    if (!nav.querySelector('a[href="family-tree.html"]')) {
-      const familyTreeLink = document.createElement("a");
-      familyTreeLink.href = "family-tree.html";
-      familyTreeLink.textContent = "Family Tree";
-      const photosLink = nav.querySelector('a[href="photos.html"]');
-      if (photosLink) {
-        photosLink.insertAdjacentElement("afterend", familyTreeLink);
-      } else {
-        nav.prepend(familyTreeLink);
-      }
-    }
-
-    // Mobile-only discoverability hint. Show once per browser session for 3 seconds.
-    if (window.matchMedia("(max-width: 900px)").matches) {
-      let alreadyShown = false;
-      try {
-        alreadyShown = sessionStorage.getItem("vera-menu-hint-shown") === "1";
-      } catch (_) {}
-
-      if (!alreadyShown) {
-        const hint = document.createElement("small");
-        hint.className = "menu-callout";
-        hint.setAttribute("aria-hidden", "true");
-        hint.textContent = "Tap MENU for more options";
-        menuButton.appendChild(hint);
-
-        try {
-          sessionStorage.setItem("vera-menu-hint-shown", "1");
-        } catch (_) {}
-
-        window.setTimeout(() => {
-          hint.classList.add("menu-callout-hide");
-          window.setTimeout(() => hint.remove(), 350);
-        }, 3000);
-      }
-    }
     menuButton.addEventListener("click", () => {
-      menuButton.querySelector(".menu-callout")?.remove();
       const isOpen = nav.classList.toggle("open");
       menuButton.setAttribute("aria-expanded", String(isOpen));
     });
@@ -132,9 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.title = `${displayYear} Photos | Vera Pachamanca`;
     const defaultGallery = document.getElementById("gallery-default");
     const beforeGallery = document.getElementById("gallery-before-1980");
+    const beforeNotice = document.getElementById("gallery-before-notice");
     const showingBefore = isBefore1980;
     if (defaultGallery) defaultGallery.hidden = showingBefore;
     if (beforeGallery) beforeGallery.hidden = !showingBefore;
+    if (beforeNotice) beforeNotice.hidden = !showingBefore;
   }
 
   // New gallery cards support local images and retain notes in the lightbox.
@@ -154,6 +141,50 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // Upload prototype: every selected image receives its own year and optional note.
+  const buildYearOptions = (selected = "2026") => {
+    const currentYear = new Date().getFullYear();
+    const options = ['<option value="before-1980">Before 1980</option>'];
+    for (let year = currentYear; year >= 1980; year -= 1) {
+      options.push(`<option value="${year}"${String(year) === String(selected) ? " selected" : ""}>${year}</option>`);
+    }
+    return options.join("");
+  };
+
+  document.querySelectorAll(".photo-year-select").forEach(select => {
+    select.innerHTML = buildYearOptions(select.dataset.selected || "2026");
+  });
+
+  const photoFiles = document.getElementById("photo-files");
+  const previewList = document.getElementById("upload-preview-list");
+  const uploadActionsText = document.querySelector(".upload-actions p");
+  if (photoFiles && previewList) {
+    photoFiles.addEventListener("change", () => {
+      const files = Array.from(photoFiles.files || []);
+      previewList.innerHTML = "";
+      files.forEach((file, index) => {
+        const card = document.createElement("article");
+        card.className = "upload-preview-card";
+        const objectUrl = URL.createObjectURL(file);
+        card.innerHTML = `
+          <div class="upload-preview-image"><img src="${objectUrl}" alt="Preview of ${file.name}"></div>
+          <div class="upload-preview-fields">
+            <div class="upload-file-heading"><strong>${file.name}</strong><button type="button" class="upload-remove">Remove</button></div>
+            <label>Year<select class="photo-year-select">${buildYearOptions("2026")}</select></label>
+            <label>Optional note<textarea rows="3" placeholder="Add a short note about this photo"></textarea></label>
+          </div>`;
+        card.querySelector(".upload-remove").addEventListener("click", () => {
+          URL.revokeObjectURL(objectUrl);
+          card.remove();
+          const remaining = previewList.children.length;
+          if (uploadActionsText) uploadActionsText.innerHTML = `<strong>${remaining} photo${remaining === 1 ? "" : "s"} ready.</strong> A new year will be created automatically if it does not already exist.`;
+        });
+        previewList.appendChild(card);
+      });
+      if (uploadActionsText) uploadActionsText.innerHTML = `<strong>${files.length} photo${files.length === 1 ? "" : "s"} ready.</strong> A new year will be created automatically if it does not already exist.`;
+    });
+  }
 
   // Static ownership preview: only the signed-in uploader sees edit/delete controls.
   document.querySelectorAll(".photo-edit-button").forEach(button => {
@@ -186,5 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  document.getElementById("preview-upload-button")?.addEventListener("click", () => {
+    alert("Design preview only. The API and storage upload will be connected after approval.");
+  });
 
 });
