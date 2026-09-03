@@ -97,7 +97,7 @@ h1,h2,h3 { font-family:"Libre Baskerville", serif; }
 .photo-preview-content { max-width:560px; }
 .photo-preview-content>p:not(.eyebrow) { color:rgba(255,255,255,.72); margin-bottom:30px; }
 .photo-collage { min-height:430px; position:relative; }
-.photo-tile { position:absolute; display:flex; align-items:end; padding:18px; box-shadow:var(--shadow); background-size:cover; background-position:center; color:white; font-family:"Libre Baskerville"; font-size:30px; border:8px solid rgba(255,255,255,.94); text-decoration:none; overflow:hidden; }
+.photo-tile { position:absolute; display:flex; align-items:end; padding:18px; box-shadow:var(--shadow); background-size:contain; background-position:center; background-repeat:no-repeat; background-color:#162f25; color:white; font-family:"Libre Baskerville"; font-size:30px; border:8px solid rgba(255,255,255,.94); text-decoration:none; overflow:hidden; }
 .photo-tile::after { content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.58),rgba(0,0,0,0) 58%); pointer-events:none; }
 .photo-tile span { position:relative; z-index:1; text-shadow:0 2px 8px rgba(0,0,0,.7); }
 .photo-tile[data-featured-photo-year="before-1980"] span { font-size:.72em; line-height:1.05; }
