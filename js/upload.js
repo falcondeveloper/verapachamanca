@@ -7,10 +7,13 @@
   const CHUNK_BYTES = 512 * 1024;
 
   function yearOptions(selected = String(currentYear)) {
-    const items = ['<option value="before-1980">Before 1980</option>'];
+    const items = [];
     for (let year = currentYear; year >= 1980; year -= 1) {
       items.push(`<option value="${year}"${String(year) === String(selected) ? ' selected' : ''}>${year}</option>`);
     }
+    [1970, 1960, 1950].forEach(year => {
+      items.push(`<option value="${year}"${String(year) === String(selected) ? ' selected' : ''}>${year}</option>`);
+    });
     return items.join('');
   }
 

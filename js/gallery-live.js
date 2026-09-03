@@ -7,10 +7,20 @@
 
   function yearOptions(selected) {
     const selectedValue = Number(selected) === 0 ? 'before-1980' : String(selected || currentYear);
-    const items = [`<option value="before-1980"${selectedValue === 'before-1980' ? ' selected' : ''}>Before 1980</option>`];
+    const items = [];
+
+    // Keep the legacy bucket visible only while editing an existing legacy item,
+    // so it can be reassigned to a decade without offering it for new uploads.
+    if (selectedValue === 'before-1980') {
+      items.push('<option value="before-1980" selected>Before 1980 (legacy)</option>');
+    }
+
     for (let year = currentYear; year >= 1980; year -= 1) {
       items.push(`<option value="${year}"${String(year) === selectedValue ? ' selected' : ''}>${year}</option>`);
     }
+    [1970, 1960, 1950].forEach(year => {
+      items.push(`<option value="${year}"${String(year) === selectedValue ? ' selected' : ''}>${year}</option>`);
+    });
     return items.join('');
   }
 

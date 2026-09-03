@@ -144,10 +144,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Upload prototype: every selected image receives its own year and optional note.
   const buildYearOptions = (selected = "2026") => {
     const currentYear = new Date().getFullYear();
-    const options = ['<option value="before-1980">Before 1980</option>'];
+    const options = [];
     for (let year = currentYear; year >= 1980; year -= 1) {
       options.push(`<option value="${year}"${String(year) === String(selected) ? " selected" : ""}>${year}</option>`);
     }
+    [1970, 1960, 1950].forEach(year => {
+      options.push(`<option value="${year}"${String(year) === String(selected) ? " selected" : ""}>${year}</option>`);
+    });
     return options.join("");
   };
 

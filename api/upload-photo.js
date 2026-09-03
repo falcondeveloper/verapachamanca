@@ -10,10 +10,11 @@ const MAX_PHOTO_BYTES = 30 * 1024 * 1024;
 const MAX_CHUNK_BYTES = 2200000;
 
 function parseYear(value) {
-  if (String(value) === 'before-1980') return 0;
   const year = Number(value);
   const currentYear = new Date().getFullYear();
-  if (!Number.isInteger(year) || year < 1980 || year > currentYear + 1) return null;
+  const validOlderDecades = [1950, 1960, 1970];
+  const validModernYear = Number.isInteger(year) && year >= 1980 && year <= currentYear + 1;
+  if (!validModernYear && !validOlderDecades.includes(year)) return null;
   return year;
 }
 
