@@ -15,9 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ? data.photos.find(photo => photo.media_type !== "video" && photo.image_url)
         : null;
 
-      if (headerPhoto) {
-        tile.style.backgroundImage = `url("${String(headerPhoto.image_url).replace(/["\\]/g, "\\$&")}")`;
-      }
+      const image = tile.querySelector("img");
+      if (headerPhoto && image) image.src = headerPhoto.image_url;
     } catch (_) {
       // Keep the existing color background when a thumbnail is unavailable.
     }

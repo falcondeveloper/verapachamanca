@@ -97,13 +97,14 @@ h1,h2,h3 { font-family:"Libre Baskerville", serif; }
 .photo-preview-content { max-width:560px; }
 .photo-preview-content>p:not(.eyebrow) { color:rgba(255,255,255,.72); margin-bottom:30px; }
 .photo-collage { min-height:430px; position:relative; }
-.photo-tile { position:absolute; display:flex; align-items:end; padding:18px; box-shadow:var(--shadow); background-size:contain; background-position:center; background-repeat:no-repeat; background-color:#162f25; color:white; font-family:"Libre Baskerville"; font-size:30px; border:8px solid rgba(255,255,255,.94); text-decoration:none; overflow:hidden; }
+.photo-tile { position:absolute; display:flex; align-items:end; padding:18px; box-shadow:var(--shadow); background:#162f25; color:white; font-family:"Libre Baskerville"; font-size:30px; border:8px solid rgba(255,255,255,.94); text-decoration:none; overflow:hidden; }
+.photo-tile img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain !important; object-position:center !important; display:block; }
 .photo-tile::after { content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.58),rgba(0,0,0,0) 58%); pointer-events:none; }
 .photo-tile span { position:relative; z-index:1; text-shadow:0 2px 8px rgba(0,0,0,.7); }
 .photo-tile[data-featured-photo-year="before-1980"] span { font-size:.72em; line-height:1.05; }
-.tile-one { width:56%; height:76%; left:0; top:8%; transform:rotate(-4deg); background:linear-gradient(160deg,#bd7c4f,#6e442b); }
-.tile-two { width:48%; height:62%; right:3%; top:0; transform:rotate(6deg); background:linear-gradient(160deg,#6f966d,#335c49); }
-.tile-three { width:44%; height:52%; right:15%; bottom:0; transform:rotate(-1deg); background:linear-gradient(160deg,#d0a24e,#9a5734); }
+.tile-one { width:56%; height:76%; left:0; top:8%; transform:rotate(-4deg); background-color:#563a29; }
+.tile-two { width:48%; height:62%; right:3%; top:0; transform:rotate(6deg); background-color:#294839; }
+.tile-three { width:44%; height:52%; right:15%; bottom:0; transform:rotate(-1deg); background-color:#62402d; }
 .info-grid { background:var(--cream); }
 .info-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
 .info-card { background:var(--paper); padding:32px; border-radius:var(--radius); border:1px solid rgba(36,49,42,.08); }
