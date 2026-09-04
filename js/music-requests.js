@@ -652,7 +652,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   clearChecksButton.addEventListener('click', () => { checkedIds.clear(); renderRequests(); });
-  playAllButton.addEventListener('click', () => queueRequests(requests, 'all'));
+  playAllButton.addEventListener('click', () => {
+    if (filterSelect.value !== 'all') {
+      filterSelect.value = 'all';
+      renderRequests();
+    }
+    queueRequests(requests, 'all');
+  });
   playFilteredButton.addEventListener('click', () => queueRequests(filteredRequests(), 'filtered'));
   playCheckedButton.addEventListener('click', () => queueRequests(requests.filter(request => checkedIds.has(Number(request.request_id))), 'checked'));
   hidePlayerButton.addEventListener('click', () => {

@@ -1,0 +1,21 @@
+VeraPachamanca Music Queue — Queue All Clears Filter
+
+Replace only:
+- music-requests.html
+- js/music-requests.js
+
+Behavior:
+- If a category filter is active and the user taps Queue All,
+  the filter changes to All Categories.
+- The visible song list immediately refreshes to show all requests.
+- Then all playable songs are queued.
+- Playback still does NOT start automatically.
+- User must tap the native YouTube Play button.
+- Existing checked songs are preserved.
+- Queue Filtered and Queue Checked behavior are unchanged.
+
+Validation:
+PASS - JavaScript syntax check.
+PASS - Queue All resets filterSelect to "all".
+PASS - Queue All calls renderRequests() before queueing.
+PASS - Queue All still queues the complete requests list.
