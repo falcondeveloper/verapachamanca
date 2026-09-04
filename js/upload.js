@@ -1,8 +1,8 @@
 (() => {
   const currentYear = new Date().getFullYear();
   const selectedFiles = [];
-  const MAX_VIDEO_SECONDS = 600;
-  const MAX_VIDEO_BYTES = 500 * 1024 * 1024;
+  const MAX_VIDEO_SECONDS = 900;
+  const MAX_VIDEO_BYTES = 1024 * 1024 * 1024;
   const MAX_PHOTO_BYTES = 30 * 1024 * 1024;
   const CHUNK_BYTES = 512 * 1024; // Photos only. Do not increase: this is the proven Android photo path.
   const DIRECT_VIDEO_CHUNK_BYTES = 8 * 1024 * 1024;
@@ -35,7 +35,7 @@
     const count = selectedFiles.length;
     const target = document.querySelector('.upload-actions p');
     if (target) {
-      target.innerHTML = `<strong>${count} item${count === 1 ? '' : 's'} ready.</strong> Photos upload as selected. Videos may be up to 10 minutes and 500 MB.`;
+      target.innerHTML = `<strong>${count} item${count === 1 ? '' : 's'} ready.</strong> Photos upload as selected. Videos may be up to 15 minutes and 1 GB.`;
     }
   }
 
@@ -346,7 +346,7 @@
 
     if (file.size > maxBytes) {
       throw new Error(isVideo
-        ? 'This video file is too large. Please choose a video under 500 MB.'
+        ? 'This video file is too large. Please choose a video under 1 GB.'
         : 'This photo file is too large. Please choose a photo under 30 MB.');
     }
 
@@ -418,7 +418,7 @@
     let durationSeconds = null;
     if (mediaType === 'video') {
       if (file.size > MAX_VIDEO_BYTES) {
-        alert(`${file.name}: video files must be under 500 MB.`);
+        alert(`${file.name}: video files must be under 1 GB.`);
         return;
       }
       try {

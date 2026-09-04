@@ -1,0 +1,54 @@
+VeraPachamanca — 15 MINUTE / 1 GB VIDEO LIMIT TEST REPORT
+
+SOURCE:
+verapachamanca_DIRECT_GODADDY_VIDEO_TESTED.zip (the current direct-GoDaddy video uploader)
+
+CHANGES:
+- Video duration: 600 sec -> 900 sec (15 min)
+- Video size: 500 MiB -> 1 GiB (1,073,741,824 bytes)
+- Direct GoDaddy endpoint version: v1 -> v2 so the existing PHP endpoint is automatically refreshed
+- Endpoint health now reports maxVideoBytes and Vercel verifies it before upload
+
+UNCHANGED:
+- Photo max: 30 MB
+- Photo chunks: 512 KB
+- Video direct chunks: 8 MB with existing fallback logic
+- Queue remains sequential
+- Database schema unchanged
+- Gallery unchanged
+
+CHECKS:
+PASS — Node syntax: js/upload.js
+PASS — Node syntax: api/upload-photo.js
+PASS — Node syntax: lib/video-direct.js
+PASS — browser duration limit is 900 seconds
+PASS — API duration limit is 900 seconds
+PASS — browser size limit is 1 GiB
+PASS — API size limit is 1 GiB
+PASS — GoDaddy endpoint size limit is 1 GiB
+PASS — GoDaddy endpoint version bumped to v2
+PASS — health response exposes maxVideoBytes
+PASS — Vercel verifies deployed endpoint has 1 GiB limit
+PASS — photo max remains 30 MB in browser
+PASS — photo chunk remains 512 KB
+PASS — photo max remains 30 MB in API
+PASS — photo direct-upload code was not introduced
+PASS — video direct chunk remains 8 MB
+PASS — direct endpoint chunk remains 8 MB
+PASS — 15 minute wording present
+PASS — 1 GB wording present
+PASS — old 500 MB wording removed
+PASS — old 10 minute wording removed
+PASS — exact 1 GiB boundary is valid
+PASS — 1 GiB + 1 byte boundary is invalid
+PASS — exact 900-second boundary is valid
+PASS — 901-second boundary is invalid
+PASS — photo marker preserved: const MAX_PHOTO_BYTES = 30 * 1024 * 1024;
+PASS — photo marker preserved: const CHUNK_BYTES = 512 * 1024;
+PASS — photo marker preserved: Uploading photo...
+PASS — photo marker preserved: Please choose a photo under 30 MB.
+
+IMPORTANT:
+These are code/regression tests. The production GoDaddy endpoint cannot be exercised from this sandbox.
+On first video start, v2's existing ensureVideoUploadEndpoint() will reject the old v1 health response,
+replace the PHP endpoint over the existing SFTP connection, then verify HTTPS health including the new 1 GiB limit.
