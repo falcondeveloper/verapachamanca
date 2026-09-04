@@ -4,8 +4,8 @@ const { requireSiteAccess, getJsonBody, nullableText, setNoStore } = require('..
 const { getLoggedInUser } = require('../lib/auth');
 const { withSftp, remoteFilePath, publicImageUrl } = require('../lib/sftp');
 
-const MAX_VIDEO_SECONDS = 120;
-const MAX_VIDEO_BYTES = 150 * 1024 * 1024;
+const MAX_VIDEO_SECONDS = 600;
+const MAX_VIDEO_BYTES = 500 * 1024 * 1024;
 const MAX_PHOTO_BYTES = 30 * 1024 * 1024;
 const MAX_CHUNK_BYTES = 2200000;
 
@@ -142,7 +142,7 @@ module.exports = async function handler(req, res) {
       if (!validTotalBytes(body.totalBytes, mediaType)) {
         return res.status(400).json({
           error: mediaType === 'video'
-            ? 'Video must be smaller than 150 MB.'
+            ? 'Video must be smaller than 500 MB.'
             : 'Photo must be smaller than 30 MB.'
         });
       }
