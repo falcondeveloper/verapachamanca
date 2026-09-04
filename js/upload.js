@@ -62,15 +62,56 @@
     });
   }
 
-  async function postUpload(body) {
-    const response = await fetch('/api/upload-photo', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || 'Upload failed.');
+  function formatUploadBytes(bytes) {
+    const value = Number(bytes) || 0;
+    if (value >= 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+    if (value >= 1024) return `${(value / 1024).toFixed(0)} KB`;
+    return `${value} bytes`;
+  }
+
+  function responseDetail(rawText, data, response) {
+    const serverMessage = data && typeof data.error === 'string' ? data.error.trim() : '';
+    const raw = String(rawText || '').replace(/\s+/g, ' ').trim();
+    const bodyText = serverMessage || raw.slice(0, 300);
+    const statusText = String(response?.statusText || '').trim();
+    const vercelId = response?.headers?.get?.('x-vercel-id');
+    const details = [];
+    if (bodyText) details.push(bodyText);
+    else if (statusText) details.push(statusText);
+    if (vercelId) details.push(`Vercel request ${vercelId}`);
+    return details.join(' | ') || 'The server returned no error details.';
+  }
+
+  async function postUpload(body, phase = 'Upload request') {
+    let response;
+    try {
+      response = await fetch('/api/upload-photo', {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    } catch (error) {
+      const online = navigator.onLine === false ? ' Browser reports that this device is offline.' : '';
+      throw new Error(
+        `${phase}: no HTTP response was received from /api/upload-photo. ` +
+        `${error?.message || 'Browser network request failed.'}.${online}`
+      );
+    }
+
+    const rawText = await response.text().catch(() => '');
+    let data = {};
+    if (rawText) {
+      try { data = JSON.parse(rawText); } catch (_) {}
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        `${phase}: server returned HTTP ${response.status}. ${responseDetail(rawText, data, response)}`
+      );
+    }
+
     return data;
   }
 
@@ -79,7 +120,7 @@
     return new Promise(resolve => window.setTimeout(resolve, ms));
   }
 
-  async function postBinaryChunk(mediaType, filename, offset, chunk, status) {
+  async function postBinaryChunk(mediaType, filename, offset, chunk, status, totalBytes) {
     const params = new URLSearchParams({
       action: `${mediaType}-chunk`,
       mediaType,
@@ -87,6 +128,10 @@
       offset: String(offset)
     });
 
+    const chunkNumber = Math.floor(offset / CHUNK_BYTES) + 1;
+    const totalChunks = Math.ceil(totalBytes / CHUNK_BYTES);
+    const throughBytes = Math.min(totalBytes, offset + chunk.size);
+    const location = `${mediaType} chunk ${chunkNumber}/${totalChunks} (${formatUploadBytes(throughBytes)} of ${formatUploadBytes(totalBytes)})`;
     const delays = [0, 800, 1600, 2800];
     let lastError = null;
 
@@ -94,7 +139,7 @@
       if (delays[attempt]) await wait(delays[attempt]);
 
       if (attempt > 0 && status) {
-        status.textContent = `Connection interrupted. Retrying... ${attempt + 1} of ${delays.length}`;
+        status.textContent = `Connection interrupted at ${Math.round((throughBytes / totalBytes) * 100)}%. Retrying ${attempt + 1} of ${delays.length}...`;
       }
 
       try {
@@ -106,21 +151,42 @@
           body: chunk
         });
 
-        const data = await response.json().catch(() => ({}));
-        if (response.ok) return data;
-
-        // Retry temporary server/network failures. Do not retry obvious bad-request errors.
-        if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
-          throw new Error(data.error || 'Upload chunk was rejected.');
+        const rawText = await response.text().catch(() => '');
+        let data = {};
+        if (rawText) {
+          try { data = JSON.parse(rawText); } catch (_) {}
         }
 
-        lastError = new Error(data.error || `Temporary upload error (${response.status}).`);
-      } catch (error) {
+        if (response.ok) return data;
+
+        const detail = responseDetail(rawText, data, response);
+        const error = new Error(`${location}: server returned HTTP ${response.status}. ${detail}`);
+
+        // A normal 4xx rejection will not improve by retrying the same chunk.
+        if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
+          error.noRetry = true;
+          throw error;
+        }
+
         lastError = error;
+      } catch (error) {
+        if (error?.noRetry) throw error;
+
+        const online = navigator.onLine === false ? ' Browser reports that this device is offline.' : '';
+        if (error instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(String(error?.message || ''))) {
+          lastError = new Error(
+            `${location}: browser received no HTTP response on attempt ${attempt + 1}/${delays.length}. ` +
+            `${error?.message || 'Network request failed.'}.${online}`
+          );
+        } else {
+          lastError = error;
+        }
       }
     }
 
-    throw new Error(lastError?.message || 'Upload connection failed after several retries.');
+    throw new Error(
+      `${location}: failed after ${delays.length} attempts. ${lastError?.message || 'No additional error details were available.'}`
+    );
   }
 
   async function uploadChunked(entry, meta, status) {
@@ -146,7 +212,7 @@
       mimeType: file.type,
       durationSeconds: isVideo ? entry.durationSeconds : null,
       totalBytes: file.size
-    });
+    }, `Starting ${entry.mediaType} "${file.name}"`);
     const filename = start.filename;
 
     try {
@@ -155,7 +221,7 @@
         const chunk = file.slice(offset, end);
         const percent = Math.round((end / file.size) * 100);
         status.textContent = `Uploading ${entry.mediaType}... ${percent}%`;
-        await postBinaryChunk(entry.mediaType, filename, offset, chunk, status);
+        await postBinaryChunk(entry.mediaType, filename, offset, chunk, status, file.size);
       }
 
       status.textContent = `Finishing ${entry.mediaType} upload...`;
@@ -168,13 +234,13 @@
         familyMemberName: meta.familyMemberName,
         durationSeconds: isVideo ? Math.ceil(entry.durationSeconds) : null,
         totalBytes: file.size
-      });
+      }, `Finalizing ${entry.mediaType} "${file.name}"`);
     } catch (error) {
       await postUpload({
         action: `${entry.mediaType}-abort`,
         mediaType: entry.mediaType,
         filename
-      }).catch(() => {});
+      }, `Cleaning up failed ${entry.mediaType} "${file.name}"`).catch(() => {});
       throw error;
     }
   }
@@ -327,8 +393,15 @@
           }
         } catch (error) {
           failed += 1;
-          status.textContent = error.message || 'Upload failed.';
+          status.textContent = `FAILED — ${entry.file.name}: ${error.message || 'Upload failed with no additional details.'}`;
           status.className = 'upload-item-status error';
+          console.error('VeraPachamanca upload failure', {
+            file: entry.file.name,
+            type: entry.mediaType,
+            size: entry.file.size,
+            durationSeconds: entry.durationSeconds,
+            error
+          });
         }
       }
 
