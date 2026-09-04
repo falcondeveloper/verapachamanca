@@ -1,0 +1,50 @@
+VeraPachamanca Music Queue Fix — Test Report
+
+SOURCE
+Built from the latest full GitHub ZIP supplied by the user:
+verapachamanca-main (1).zip
+
+LIVE FILES CHANGED
+- music-requests.html
+- js/music-requests.js
+
+NO CHANGES
+- Music API / MySQL
+- Song order database logic
+- Categories
+- YouTube search
+- Song preview modal
+- Add/Edit/Delete
+- Checked-selection persistence
+
+BUG FOUND
+The queue buttons called YouTube IFrame API loadPlaylist().
+loadPlaylist() starts playback immediately.
+
+FIX
+The buttons now use cuePlaylist(ids, 0, 0).
+cuePlaylist loads/cues the first video and waits for the user to press the native
+YouTube Play button.
+
+BUTTON LABELS
+- Queue All
+- Queue Filtered
+- Queue Checked
+
+TESTS RUN
+PASS - JavaScript syntax check.
+PASS - Existing YouTube player uses cuePlaylist, never loadPlaylist/playVideo.
+PASS - New YouTube player explicitly sets autoplay: 0.
+PASS - New player calls cuePlaylist onReady.
+PASS - Queue preserves list order.
+PASS - Requests without valid YouTube links are excluded from the playable queue.
+PASS - First queued song is reported correctly.
+PASS - Player instructs user to tap Play.
+PASS - No loadPlaylist call remains in the queue implementation.
+
+EXPECTED BEHAVIOR
+1. Click Queue All / Queue Filtered / Queue Checked.
+2. Player opens showing the first playable song in that selected list.
+3. Nothing plays automatically.
+4. User taps the native YouTube Play button.
+5. Playlist continues through the remaining queued songs in saved order.

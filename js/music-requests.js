@@ -288,9 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
     playCheckedButton.disabled = checkedPlayable === 0;
     clearChecksButton.disabled = checked.length === 0;
 
-    playAllButton.textContent = allLinked ? `▶ All ${allLinked}` : '▶ All';
-    playFilteredButton.textContent = filteredLinked ? `▶ Filtered ${filteredLinked}` : '▶ Filtered';
-    playCheckedButton.textContent = checkedPlayable ? `▶ Checked ${checkedPlayable}` : '▶ Checked';
+    playAllButton.textContent = allLinked ? `Queue All ${allLinked}` : 'Queue All';
+    playFilteredButton.textContent = filteredLinked ? `Queue Filtered ${filteredLinked}` : 'Queue Filtered';
+    playCheckedButton.textContent = checkedPlayable ? `Queue Checked ${checkedPlayable}` : 'Queue Checked';
   }
 
   function renderRequests() {
@@ -438,27 +438,41 @@ document.addEventListener('DOMContentLoaded', () => {
     return youtubeApiPromise;
   }
 
-  async function playRequests(list, label) {
+  async function queueRequests(list, label) {
     const playable = linked(list);
     const ids = playable.map(request => request.youtube_video_id);
     if (!ids.length) return;
+
+    const firstSong = playable[0];
     playerCard.hidden = false;
-    playerMessage.textContent = '';
+    playerMessage.textContent = 'Loading first song...';
     playerCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
     try {
       await ensureYouTubeApi();
-      if (youtubePlayer && typeof youtubePlayer.loadPlaylist === 'function') {
-        youtubePlayer.loadPlaylist({ playlist: ids, index: 0, startSeconds: 0 });
+
+      // cuePlaylist deliberately does NOT start playback. It displays/cues the
+      // first song and waits for a person to tap the native YouTube Play button.
+      // Because the full list is cued as a playlist, YouTube advances through
+      // the remaining songs after playback has been started by the user.
+      if (youtubePlayer && typeof youtubePlayer.cuePlaylist === 'function') {
+        youtubePlayer.cuePlaylist(ids, 0, 0);
       } else {
         youtubePlayer = new window.YT.Player('music-player', {
-          width: '640', height: '360', playerVars: { playsinline: 1, rel: 0 },
+          width: '640',
+          height: '360',
+          playerVars: { playsinline: 1, rel: 0, autoplay: 0 },
           events: {
-            onReady(event) { event.target.loadPlaylist({ playlist: ids, index: 0, startSeconds: 0 }); },
+            onReady(event) { event.target.cuePlaylist(ids, 0, 0); },
             onError() { playerMessage.textContent = 'One YouTube video could not be played. Use Next in the player to continue.'; }
           }
         });
       }
-      playerMessage.textContent = `${ids.length} ${label} song${ids.length === 1 ? '' : 's'} loaded in saved order.`;
+
+      const firstLabel = firstSong.artist_name
+        ? `${firstSong.song_name} — ${firstSong.artist_name}`
+        : firstSong.song_name;
+      playerMessage.textContent = `${ids.length} ${label} song${ids.length === 1 ? '' : 's'} queued. First: ${firstLabel}. Tap Play when ready; the remaining songs will continue in saved order.`;
     } catch (error) {
       playerMessage.textContent = error.message;
     }
@@ -638,9 +652,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   clearChecksButton.addEventListener('click', () => { checkedIds.clear(); renderRequests(); });
-  playAllButton.addEventListener('click', () => playRequests(requests, 'all'));
-  playFilteredButton.addEventListener('click', () => playRequests(filteredRequests(), 'filtered'));
-  playCheckedButton.addEventListener('click', () => playRequests(requests.filter(request => checkedIds.has(Number(request.request_id))), 'checked'));
+  playAllButton.addEventListener('click', () => queueRequests(requests, 'all'));
+  playFilteredButton.addEventListener('click', () => queueRequests(filteredRequests(), 'filtered'));
+  playCheckedButton.addEventListener('click', () => queueRequests(requests.filter(request => checkedIds.has(Number(request.request_id))), 'checked'));
   hidePlayerButton.addEventListener('click', () => {
     playerCard.hidden = true;
     if (youtubePlayer && typeof youtubePlayer.pauseVideo === 'function') youtubePlayer.pauseVideo();
