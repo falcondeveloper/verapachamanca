@@ -43,7 +43,12 @@
       </form>` : '';
 
     const media = isVideo
-      ? `<div class="photo-record-image photo-record-video"><video src="${escapeHtml(photo.image_url)}" controls playsinline preload="metadata"></video></div>`
+      ? `<div class="photo-record-image photo-record-video" style="background:#111;cursor:default;">
+          <video controls playsinline preload="none" style="display:block;width:100%;height:100%;object-fit:contain;background:#111;">
+            <source src="${escapeHtml(photo.image_url)}">
+            Your browser cannot play this video.
+          </video>
+        </div>`
       : `<button class="photo-record-image live-lightbox-image" data-image="${escapeHtml(photo.image_url)}" data-caption="${escapeHtml(note)}"><img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(note)}" loading="lazy"></button>`;
 
     const duration = isVideo && photo.duration_seconds
@@ -80,34 +85,6 @@
   }
 
 
-  const videoObserver = 'IntersectionObserver' in window
-    ? new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          const video = entry.target;
-          if (!entry.isIntersecting || entry.intersectionRatio < 0.25) {
-            if (!video.paused) video.pause();
-          }
-        });
-      }, { threshold: [0, 0.25] })
-    : null;
-
-  function wireVideoAutoPause(container = document) {
-    const videos = Array.from(container.querySelectorAll('video'));
-    videos.forEach(video => {
-      if (video.dataset.autoPauseWired === '1') return;
-      video.dataset.autoPauseWired = '1';
-
-      // Pause this video once the user scrolls past it.
-      videoObserver?.observe(video);
-
-      // Keep only one video playing at a time.
-      video.addEventListener('play', () => {
-        document.querySelectorAll('video').forEach(other => {
-          if (other !== video && !other.paused) other.pause();
-        });
-      });
-    });
-  }
 
   function wireLightbox(container) {
     const lightbox = document.querySelector('.lightbox');
@@ -299,11 +276,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    wireVideoAutoPause(document);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) document.querySelectorAll('video').forEach(video => video.pause());
-    });
-
     const yearLabel = document.getElementById('gallery-year');
     if (!yearLabel) return;
     const rawYear = new URLSearchParams(window.location.search).get('year') || String(currentYear);
@@ -341,7 +313,6 @@
       wireLightbox(liveSection);
       wireActions(liveSection);
       if (canSort && sortStatus) wireSorting(liveSection, apiYear, sortStatus);
-      wireVideoAutoPause(liveSection);
     } catch (error) {
       liveSection.innerHTML = `<p class="archive-note">${escapeHtml(error.message)}</p>`;
     }
