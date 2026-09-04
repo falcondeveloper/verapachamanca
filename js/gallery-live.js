@@ -1,5 +1,6 @@
 (() => {
   const currentYear = new Date().getFullYear();
+  const videoPoster = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 360'%3E%3Crect width='640' height='360' fill='%23232323'/%3E%3Ccircle cx='320' cy='164' r='54' fill='%23ffffff' fill-opacity='.16'/%3E%3Cpath d='M304 132 L354 164 L304 196 Z' fill='%23ffffff'/%3E%3Ctext x='320' y='258' text-anchor='middle' font-family='Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff'%3EFAMILY VIDEO%3C/text%3E%3C/svg%3E";
 
   function desktopSortingEnabled() {
     return window.matchMedia('(min-width: 901px)').matches;
@@ -44,7 +45,7 @@
 
     const media = isVideo
       ? `<div class="photo-record-image photo-record-video" style="background:#111;cursor:default;">
-          <video controls playsinline preload="none" style="display:block;width:100%;height:100%;object-fit:contain;background:#111;">
+          <video controls playsinline preload="none" poster="${videoPoster}" style="display:block;width:100%;height:100%;object-fit:contain;background:#111;">
             <source src="${escapeHtml(photo.image_url)}">
             Your browser cannot play this video.
           </video>
@@ -85,6 +86,85 @@
   }
 
 
+  const videoObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          // Pause as soon as the video is essentially off screen.
+          if (!entry.isIntersecting || entry.intersectionRatio < 0.05) {
+            if (!video.paused) video.pause();
+          }
+        });
+      }, { threshold: [0, 0.05] })
+    : null;
+
+  const videoThumbnailObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const video = entry.target;
+          videoThumbnailObserver.unobserve(video);
+          video.preload = 'metadata';
+          try { video.load(); } catch (_) {}
+        });
+      }, { rootMargin: '300px 0px', threshold: 0.01 })
+    : null;
+
+  function wireVideoBehavior(container) {
+    container.querySelectorAll('video').forEach(video => {
+      if (video.dataset.videoBehaviorWired === '1') return;
+      video.dataset.videoBehaviorWired = '1';
+
+      // Keep only one family video playing at a time.
+      video.addEventListener('play', () => {
+        document.querySelectorAll('video').forEach(other => {
+          if (other !== video && !other.paused) other.pause();
+        });
+
+        // Thumbnail priming may leave the video a fraction of a second in.
+        // Return to the true beginning the first time the user presses Play.
+        if (video.dataset.realPlayStarted !== '1') {
+          video.dataset.realPlayStarted = '1';
+          if (video.currentTime > 0 && video.currentTime <= 0.25) {
+            try { video.currentTime = 0; } catch (_) {}
+          }
+        }
+      });
+
+      videoObserver?.observe(video);
+
+      // Ask the browser for a frame near the beginning. This gives the card
+      // a real thumbnail without creating or storing a separate image file.
+      const primeThumbnail = () => {
+        if (video.dataset.realPlayStarted === '1' || video.dataset.thumbPrimed === '1') return;
+        if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+        video.dataset.thumbPrimed = '1';
+        const frameTime = Math.min(0.10, Math.max(0.01, video.duration * 0.002));
+        try { video.currentTime = frameTime; } catch (_) {}
+      };
+
+      const showRealFrame = () => {
+        if (video.dataset.realPlayStarted === '1') return;
+        if (video.dataset.thumbPrimed === '1') {
+          video.pause();
+          video.removeAttribute('poster');
+          video.dataset.thumbReady = '1';
+        }
+      };
+
+      if (video.readyState >= 1) primeThumbnail();
+      else video.addEventListener('loadedmetadata', primeThumbnail, { once: true });
+      video.addEventListener('seeked', showRealFrame);
+
+      // Only fetch metadata/a first frame for videos that are on screen or
+      // about to come on screen. The generic poster remains for the rest.
+      if (videoThumbnailObserver) videoThumbnailObserver.observe(video);
+      else {
+        video.preload = 'metadata';
+        try { video.load(); } catch (_) {}
+      }
+    });
+  }
 
   function wireLightbox(container) {
     const lightbox = document.querySelector('.lightbox');
@@ -276,6 +356,12 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        document.querySelectorAll('video').forEach(video => video.pause());
+      }
+    });
+
     const yearLabel = document.getElementById('gallery-year');
     if (!yearLabel) return;
     const rawYear = new URLSearchParams(window.location.search).get('year') || String(currentYear);
@@ -312,6 +398,7 @@
       liveSection.innerHTML = data.photos.map(mediaCard).join('');
       wireLightbox(liveSection);
       wireActions(liveSection);
+      wireVideoBehavior(liveSection);
       if (canSort && sortStatus) wireSorting(liveSection, apiYear, sortStatus);
     } catch (error) {
       liveSection.innerHTML = `<p class="archive-note">${escapeHtml(error.message)}</p>`;
