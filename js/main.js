@@ -141,53 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Upload prototype: every selected image receives its own year and optional note.
-  const buildYearOptions = (selected = "2026") => {
-    const currentYear = new Date().getFullYear();
-    const options = [];
-    for (let year = currentYear; year >= 1980; year -= 1) {
-      options.push(`<option value="${year}"${String(year) === String(selected) ? " selected" : ""}>${year}</option>`);
-    }
-    [1970, 1960, 1950].forEach(year => {
-      options.push(`<option value="${year}"${String(year) === String(selected) ? " selected" : ""}>${year}</option>`);
-    });
-    return options.join("");
-  };
-
-  document.querySelectorAll(".photo-year-select").forEach(select => {
-    select.innerHTML = buildYearOptions(select.dataset.selected || "2026");
-  });
-
-  const photoFiles = document.getElementById("photo-files");
-  const previewList = document.getElementById("upload-preview-list");
-  const uploadActionsText = document.querySelector(".upload-actions p");
-  if (photoFiles && previewList) {
-    photoFiles.addEventListener("change", () => {
-      const files = Array.from(photoFiles.files || []);
-      previewList.innerHTML = "";
-      files.forEach((file, index) => {
-        const card = document.createElement("article");
-        card.className = "upload-preview-card";
-        const objectUrl = URL.createObjectURL(file);
-        card.innerHTML = `
-          <div class="upload-preview-image"><img src="${objectUrl}" alt="Preview of ${file.name}"></div>
-          <div class="upload-preview-fields">
-            <div class="upload-file-heading"><strong>${file.name}</strong><button type="button" class="upload-remove">Remove</button></div>
-            <label>Year<select class="photo-year-select">${buildYearOptions("2026")}</select></label>
-            <label>Optional note<textarea rows="3" placeholder="Add a short note about this photo"></textarea></label>
-          </div>`;
-        card.querySelector(".upload-remove").addEventListener("click", () => {
-          URL.revokeObjectURL(objectUrl);
-          card.remove();
-          const remaining = previewList.children.length;
-          if (uploadActionsText) uploadActionsText.innerHTML = `<strong>${remaining} photo${remaining === 1 ? "" : "s"} ready.</strong> A new year will be created automatically if it does not already exist.`;
-        });
-        previewList.appendChild(card);
-      });
-      if (uploadActionsText) uploadActionsText.innerHTML = `<strong>${files.length} photo${files.length === 1 ? "" : "s"} ready.</strong> A new year will be created automatically if it does not already exist.`;
-    });
-  }
-
   // Static ownership preview: only the signed-in uploader sees edit/delete controls.
   document.querySelectorAll(".photo-edit-button").forEach(button => {
     button.addEventListener("click", () => {
@@ -219,8 +172,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  document.getElementById("preview-upload-button")?.addEventListener("click", () => {
-    alert("Design preview only. The API and storage upload will be connected after approval.");
-  });
 
 });
