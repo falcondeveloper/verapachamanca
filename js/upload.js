@@ -4,7 +4,9 @@
   const MAX_VIDEO_SECONDS = 600;
   const MAX_VIDEO_BYTES = 500 * 1024 * 1024;
   const MAX_PHOTO_BYTES = 30 * 1024 * 1024;
-  const CHUNK_BYTES = 512 * 1024;
+  const CHUNK_BYTES = 512 * 1024; // Photos only. Do not increase: this is the proven Android photo path.
+  const DIRECT_VIDEO_CHUNK_BYTES = 8 * 1024 * 1024;
+  const MIN_DIRECT_VIDEO_CHUNK_BYTES = 1 * 1024 * 1024;
 
   function yearOptions(selected = String(currentYear)) {
     const items = [];
@@ -189,6 +191,154 @@
     );
   }
 
+
+  async function readDirectResponse(response) {
+    const rawText = await response.text().catch(() => '');
+    let data = {};
+    if (rawText) {
+      try { data = JSON.parse(rawText); } catch (_) {}
+    }
+    const detail = data && typeof data.error === 'string'
+      ? data.error
+      : String(rawText || response.statusText || 'No error details.').replace(/\s+/g, ' ').trim().slice(0, 300);
+    return { rawText, data, detail };
+  }
+
+  async function postDirectVideoChunk(grant, filename, totalBytes, offset, chunk, status, minChunkBytes) {
+    const end = offset + chunk.size;
+    const percent = Math.round((end / totalBytes) * 100);
+    const location = `video ${formatUploadBytes(offset)}–${formatUploadBytes(end)} of ${formatUploadBytes(totalBytes)}`;
+    const params = new URLSearchParams({
+      action: 'chunk',
+      filename,
+      totalBytes: String(totalBytes),
+      offset: String(offset),
+      chunkBytes: String(chunk.size),
+      expires: String(grant.expires),
+      token: grant.token
+    });
+    const delays = [0, 900, 2200];
+    let lastError = null;
+
+    for (let attempt = 0; attempt < delays.length; attempt += 1) {
+      if (delays[attempt]) await wait(delays[attempt]);
+      if (attempt > 0 && status) {
+        status.textContent = `Video connection interrupted at ${percent}%. Retrying ${attempt + 1} of ${delays.length}...`;
+      }
+
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 120000);
+      try {
+        const response = await fetch(`${grant.url}?${params.toString()}`, {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'omit',
+          cache: 'no-store',
+          // text/plain keeps this a simple CORS request, avoiding a preflight for every chunk.
+          // The body remains the original binary Blob bytes.
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: chunk,
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        const { data, detail } = await readDirectResponse(response);
+        if (response.ok) {
+          const receivedThrough = Number(data.receivedThrough);
+          if (receivedThrough !== end) {
+            throw new Error(`${location}: GoDaddy acknowledged ${receivedThrough} bytes instead of ${end}.`);
+          }
+          return data;
+        }
+
+        const error = new Error(`${location}: GoDaddy returned HTTP ${response.status}. ${detail}`);
+        if (response.status === 413) {
+          error.reduceChunk = chunk.size > minChunkBytes;
+          error.noRetry = true;
+          throw error;
+        }
+        if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
+          error.noRetry = true;
+          throw error;
+        }
+        lastError = error;
+      } catch (error) {
+        clearTimeout(timer);
+        if (error?.noRetry) throw error;
+
+        if (error?.name === 'AbortError') {
+          const timeoutError = new Error(`${location}: the chunk took more than 120 seconds.`);
+          timeoutError.reduceChunk = chunk.size > minChunkBytes;
+          if (timeoutError.reduceChunk) throw timeoutError;
+          lastError = timeoutError;
+        } else if (error instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(String(error?.message || ''))) {
+          const online = navigator.onLine === false ? ' Browser reports that this device is offline.' : '';
+          lastError = new Error(`${location}: browser received no HTTP response on attempt ${attempt + 1}/${delays.length}. ${error?.message || 'Network request failed.'}.${online}`);
+        } else {
+          lastError = error;
+        }
+      }
+    }
+
+    const finalError = new Error(`${location}: failed after ${delays.length} attempts. ${lastError?.message || 'No additional details.'}`);
+    finalError.reduceChunk = chunk.size > minChunkBytes;
+    throw finalError;
+  }
+
+  async function uploadVideoDirect(file, filename, grant, status) {
+    if (!grant || !grant.url || !grant.token || !grant.expires) {
+      throw new Error('The server did not provide a direct GoDaddy video upload authorization.');
+    }
+
+    const serverMax = Number(grant.chunkBytes) || DIRECT_VIDEO_CHUNK_BYTES;
+    const serverMin = Number(grant.minChunkBytes) || MIN_DIRECT_VIDEO_CHUNK_BYTES;
+    const minChunkBytes = Math.max(512 * 1024, Math.min(serverMin, DIRECT_VIDEO_CHUNK_BYTES));
+    let chunkBytes = Math.min(DIRECT_VIDEO_CHUNK_BYTES, serverMax);
+    if (chunkBytes < minChunkBytes) chunkBytes = minChunkBytes;
+
+    let offset = 0;
+    while (offset < file.size) {
+      const end = Math.min(file.size, offset + chunkBytes);
+      const chunk = file.slice(offset, end);
+      const percent = Math.round((end / file.size) * 100);
+      status.textContent = `Uploading video directly to GoDaddy... ${percent}% (${formatUploadBytes(end)} of ${formatUploadBytes(file.size)})`;
+
+      try {
+        await postDirectVideoChunk(grant, filename, file.size, offset, chunk, status, minChunkBytes);
+        offset = end;
+      } catch (error) {
+        if (error?.reduceChunk && chunkBytes > minChunkBytes) {
+          const smaller = Math.max(minChunkBytes, Math.floor(chunkBytes / 2));
+          if (smaller < chunkBytes) {
+            chunkBytes = smaller;
+            status.textContent = `GoDaddy needs smaller video pieces. Continuing at ${formatUploadBytes(chunkBytes)} per piece...`;
+            continue;
+          }
+        }
+        throw error;
+      }
+    }
+  }
+
+  async function abortDirectVideo(grant, filename, totalBytes) {
+    if (!grant?.url || !grant?.token || !grant?.expires || !filename) return;
+    const params = new URLSearchParams({
+      action: 'abort',
+      filename,
+      totalBytes: String(totalBytes),
+      expires: String(grant.expires),
+      token: grant.token
+    });
+    await fetch(`${grant.url}?${params.toString()}`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'omit',
+      cache: 'no-store',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: ''
+    }).catch(() => {});
+  }
+
   async function uploadChunked(entry, meta, status) {
     const file = entry.file;
     const isVideo = entry.mediaType === 'video';
@@ -216,12 +366,17 @@
     const filename = start.filename;
 
     try {
-      for (let offset = 0; offset < file.size; offset += CHUNK_BYTES) {
-        const end = Math.min(file.size, offset + CHUNK_BYTES);
-        const chunk = file.slice(offset, end);
-        const percent = Math.round((end / file.size) * 100);
-        status.textContent = `Uploading ${entry.mediaType}... ${percent}%`;
-        await postBinaryChunk(entry.mediaType, filename, offset, chunk, status, file.size);
+      if (isVideo) {
+        await uploadVideoDirect(file, filename, start.directVideoUpload, status);
+      } else {
+        // Keep the working photo uploader exactly on the existing 512 KB Vercel/SFTP path.
+        for (let offset = 0; offset < file.size; offset += CHUNK_BYTES) {
+          const end = Math.min(file.size, offset + CHUNK_BYTES);
+          const chunk = file.slice(offset, end);
+          const percent = Math.round((end / file.size) * 100);
+          status.textContent = `Uploading photo... ${percent}%`;
+          await postBinaryChunk('photo', filename, offset, chunk, status, file.size);
+        }
       }
 
       status.textContent = `Finishing ${entry.mediaType} upload...`;
@@ -236,6 +391,9 @@
         totalBytes: file.size
       }, `Finalizing ${entry.mediaType} "${file.name}"`);
     } catch (error) {
+      if (isVideo && start.directVideoUpload) {
+        await abortDirectVideo(start.directVideoUpload, filename, file.size);
+      }
       await postUpload({
         action: `${entry.mediaType}-abort`,
         mediaType: entry.mediaType,

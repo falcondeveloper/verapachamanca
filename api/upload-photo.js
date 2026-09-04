@@ -3,6 +3,7 @@ const { getDb } = require('../lib/db');
 const { requireSiteAccess, getJsonBody, nullableText, setNoStore } = require('../lib/http');
 const { getLoggedInUser } = require('../lib/auth');
 const { withSftp, remoteFilePath, publicImageUrl } = require('../lib/sftp');
+const { ensureVideoUploadEndpoint, createVideoUploadGrant, getDirectVideoStatus } = require('../lib/video-direct');
 
 const MAX_VIDEO_SECONDS = 600;
 const MAX_VIDEO_BYTES = 500 * 1024 * 1024;
@@ -158,6 +159,13 @@ module.exports = async function handler(req, res) {
         });
       }
       const filename = `vera-${mediaType}-${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+      if (mediaType === 'video') {
+        await ensureVideoUploadEndpoint();
+        const directVideoUpload = createVideoUploadGrant(filename, Number(body.totalBytes));
+        return res.status(200).json({ ok: true, filename, directVideoUpload });
+      }
+
       return res.status(200).json({ ok: true, filename });
     }
 
@@ -207,14 +215,21 @@ module.exports = async function handler(req, res) {
       const caption = nullableText(body.caption, 5000);
       const familyMemberName = nullableText(body.familyMemberName, 150);
       const totalBytes = Number(body.totalBytes);
-      const remotePath = remoteFilePath(filename);
-
-      await withSftp(async client => {
-        const exists = await client.exists(remotePath);
-        if (!exists) throw new Error('Uploaded file was not found.');
-        const stat = await client.stat(remotePath);
-        if (Number(stat.size) !== totalBytes) throw new Error('Uploaded file size does not match the original file.');
-      });
+      if (mediaType === 'video') {
+        const directStatus = await getDirectVideoStatus(filename, totalBytes);
+        if (!directStatus.exists) throw new Error('Uploaded video was not found on GoDaddy.');
+        if (Number(directStatus.size) !== totalBytes) {
+          throw new Error(`Uploaded video size does not match the original file (${directStatus.size} of ${totalBytes} bytes).`);
+        }
+      } else {
+        const remotePath = remoteFilePath(filename);
+        await withSftp(async client => {
+          const exists = await client.exists(remotePath);
+          if (!exists) throw new Error('Uploaded file was not found.');
+          const stat = await client.stat(remotePath);
+          if (Number(stat.size) !== totalBytes) throw new Error('Uploaded file size does not match the original file.');
+        });
+      }
 
       const [existing] = await db.execute(
         'SELECT photo_id FROM vera_photos WHERE filename = ? LIMIT 1',

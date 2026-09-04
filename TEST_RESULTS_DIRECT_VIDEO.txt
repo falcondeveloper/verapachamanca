@@ -1,0 +1,48 @@
+VeraPachamanca direct-video uploader — automated validation report
+Date: 2026-09-04
+
+PASS — JavaScript syntax: js/upload.js
+PASS — JavaScript syntax: api/upload-photo.js
+PASS — JavaScript syntax: lib/video-direct.js
+PASS — PHP syntax: generated vera-video-upload.php (PHP 8.4.23)
+
+PHP/DIRECT-ENDPOINT TESTS
+PASS — health response and CORS response
+PASS — 3 sequential payload uploads: 2.0 MB, 17.0 MB, 33.0 MB
+PASS — output SHA-256 matched source payloads
+PASS — duplicate chunk retry is idempotent
+PASS — partial-chunk recovery rolls back the damaged partial chunk and rewrites it
+PASS — out-of-order chunk rejected with HTTP 409
+PASS — chunk larger than 8 MB rejected with HTTP 413
+PASS — invalid HMAC upload token rejected with HTTP 403
+PASS — abort removes a partial video
+
+REAL MP4 TRANSPORT TESTS
+PASS — 30-second MP4, 12 MB, 2 direct chunks, SHA-256 match
+PASS — 120-second MP4, 18 MB, 3 direct chunks, SHA-256 match
+PASS — 600-second / 10-minute MP4, 35 MB, 5 direct chunks, SHA-256 match
+PASS — all three real MP4 files uploaded sequentially
+
+MAX-SIZE TRANSPORT TEST
+PASS — exact 500 MB payload
+PASS — 63 direct 8 MB-or-smaller chunks
+PASS — final size verified at exactly 524,288,000 bytes
+
+BROWSER-UPLOADER LOGIC TESTS (js/upload.js executed in a Node VM with mocked HTTP)
+PASS — 3-video sequential queue: each start/finish completed before the next video started
+PASS — photo regression: 1.25 MB photo remained on 512 KB / 512 KB / 256 KB Vercel chunks
+PASS — photo did not call the direct GoDaddy video endpoint
+PASS — adaptive fallback: simulated HTTP 413 on 8 MB caused automatic 4 MB continuation
+
+API ROUTING TESTS (api/upload-photo.js with isolated dependency mocks)
+PASS — 600-second video start returns direct-GoDaddy authorization
+PASS — >600-second video is rejected
+PASS — photo-start never initializes the direct-video endpoint
+PASS — video-finish verifies through direct GoDaddy HTTP status
+PASS — photo-finish retains the existing SFTP verification path
+
+LIMITATION OF THIS TEST REPORT
+The code was exercised against a local PHP server and mocked Vercel/SFTP dependencies because this
+execution environment cannot open a live SFTP connection to the user's GoDaddy account. The production
+code therefore performs its own GoDaddy HTTPS health check at video-start and refuses to begin a video
+upload unless the endpoint was successfully installed and reports the media folder writable.
