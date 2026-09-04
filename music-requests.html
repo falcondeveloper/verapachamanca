@@ -917,6 +917,127 @@
       }
     }
 
+    /* Final mobile list width balance */
+    @media (max-width:700px) {
+      .music-table {
+        width:100% !important;
+        table-layout:fixed !important;
+      }
+
+      /* Give Song/Category most of the screen */
+      .music-table th:first-child,
+      .music-table td:first-child {
+        width:72% !important;
+      }
+
+      /* Artist is secondary; keep it compact */
+      .music-table th:last-child,
+      .music-table td:last-child {
+        width:28% !important;
+      }
+
+      .music-song-cell {
+        gap:4px !important;
+        min-height:44px !important;
+      }
+
+      .music-song-main {
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        gap:4px !important;
+      }
+
+      .music-song-text {
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        gap:2px !important;
+      }
+
+      /* Prefer one-line song titles */
+      .music-song-cell strong {
+        display:block !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        font-size:13px !important;
+        line-height:1.15 !important;
+      }
+
+      /* Category directly below song, also one line */
+      .music-category-tag {
+        display:block !important;
+        max-width:100% !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        font-size:9.5px !important;
+        line-height:1.1 !important;
+        padding:1px 4px !important;
+      }
+
+      .music-order-actions {
+        flex:0 0 30px !important;
+        width:30px !important;
+      }
+
+      .music-order-actions button {
+        width:28px !important;
+        min-width:28px !important;
+        height:28px !important;
+        padding:0 !important;
+      }
+
+      /* Make Artist intentionally small so Song gets the space */
+      .music-artist-cell {
+        grid-template-columns:minmax(0,1fr) 34px !important;
+        gap:2px !important;
+      }
+
+      .music-artist-meta {
+        min-width:0 !important;
+        overflow:hidden !important;
+      }
+
+      .music-artist-meta > span:first-child {
+        display:block !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        font-size:8.5px !important;
+        line-height:1.05 !important;
+      }
+
+      .music-youtube-link,
+      .music-missing-link {
+        display:block !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        font-size:7.5px !important;
+        line-height:1.0 !important;
+      }
+
+      .music-more-menu {
+        width:34px !important;
+        min-width:34px !important;
+      }
+
+      .music-more-menu summary {
+        width:32px !important;
+        height:32px !important;
+        font-size:24px !important;
+      }
+
+      .music-table td:first-child {
+        padding-right:3px !important;
+      }
+
+      .music-table td:last-child {
+        padding-left:3px !important;
+        padding-right:5px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
