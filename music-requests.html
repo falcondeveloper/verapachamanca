@@ -780,6 +780,143 @@
       }
     }
 
+    /* Mobile list readability: larger song/category text and always-visible 3-dot menu */
+    @media (max-width:700px) {
+      .music-table {
+        width:100% !important;
+        table-layout:fixed !important;
+      }
+
+      .music-table th:first-child,
+      .music-table td:first-child {
+        width:58% !important;
+      }
+
+      .music-table th:last-child,
+      .music-table td:last-child {
+        width:42% !important;
+      }
+
+      .music-table th,
+      .music-table td {
+        box-sizing:border-box !important;
+      }
+
+      .music-song-cell {
+        align-items:center !important;
+        gap:5px !important;
+        min-height:46px !important;
+      }
+
+      .music-song-main {
+        align-items:flex-start !important;
+        gap:6px !important;
+        min-width:0 !important;
+      }
+
+      .music-select-checkbox {
+        width:16px !important;
+        height:16px !important;
+        margin-top:2px !important;
+      }
+
+      .music-song-text {
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:flex-start !important;
+        justify-content:center !important;
+        gap:3px !important;
+        min-width:0 !important;
+        overflow:visible !important;
+      }
+
+      .music-song-cell strong {
+        display:-webkit-box !important;
+        -webkit-box-orient:vertical !important;
+        -webkit-line-clamp:2 !important;
+        white-space:normal !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        font-size:12.5px !important;
+        line-height:1.18 !important;
+        font-weight:700 !important;
+      }
+
+      .music-category-tag {
+        display:inline-flex !important;
+        max-width:100% !important;
+        margin:0 !important;
+        padding:2px 5px !important;
+        font-size:9.5px !important;
+        line-height:1.15 !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+      }
+
+      .music-order-actions {
+        flex:0 0 32px !important;
+        width:32px !important;
+        margin-left:auto !important;
+      }
+
+      .music-artist-cell {
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) 36px !important;
+        align-items:center !important;
+        gap:4px !important;
+        width:100% !important;
+        min-width:0 !important;
+        box-sizing:border-box !important;
+      }
+
+      .music-artist-meta {
+        min-width:0 !important;
+        overflow:hidden !important;
+      }
+
+      .music-artist-meta > span:first-child {
+        font-size:10.5px !important;
+        line-height:1.15 !important;
+      }
+
+      .music-youtube-link,
+      .music-missing-link {
+        font-size:9px !important;
+        line-height:1.05 !important;
+      }
+
+      .music-more-menu {
+        display:block !important;
+        width:36px !important;
+        min-width:36px !important;
+        margin:0 !important;
+        justify-self:end !important;
+        overflow:visible !important;
+        z-index:20 !important;
+      }
+
+      .music-more-menu summary {
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        width:34px !important;
+        height:34px !important;
+        margin:0 !important;
+        padding:0 !important;
+        box-sizing:border-box !important;
+        font-size:26px !important;
+        line-height:1 !important;
+        color:#24513e !important;
+        overflow:visible !important;
+      }
+
+      .music-table td:last-child {
+        padding-right:7px !important;
+        overflow:visible !important;
+      }
+    }
+
   </style>
 </head>
 <body>
