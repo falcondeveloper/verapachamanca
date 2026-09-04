@@ -1,0 +1,32 @@
+VeraPachamanca — Mobile Music Song/Artist Menu Fix
+
+Replace only:
+- music-requests.html
+- js/music-requests.js
+
+MOBILE CHANGES:
+- Artist column/header hidden on phones.
+- Song/category now use the full row width.
+- Song font increased to 15px.
+- Category font increased to 11px and stays below song.
+- Song and category stay on one line with ellipsis only when necessary.
+- Artist name moved into the 3-dot menu as the first line.
+- Preview/Edit/Delete remain in the 3-dot menu.
+
+DESKTOP:
+- Existing Artist column remains unchanged.
+
+REGRESSION CHECKS:
+PASS — mobile artist column hidden
+PASS — song font is 15px
+PASS — category font is 11px
+PASS — mobile menu added to song cell
+PASS — artist value appears inside mobile menu
+PASS — preview action retained
+PASS — edit action retained
+PASS — delete action retained
+PASS — queue all clears category filter retained
+PASS — category auto-filter retained
+PASS — cuePlaylist retained
+PASS — loadPlaylist not used
+PASS — JavaScript syntax check.

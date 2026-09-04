@@ -328,6 +328,15 @@ document.addEventListener('DOMContentLoaded', () => {
               <button type="button" class="table-action move-music-request" aria-label="Move up" title="Move up" data-id="${request.request_id}" data-swap-id="${previous ? previous.request_id : ''}" ${previous ? '' : 'disabled'}>↑<span class="move-label"> Up</span></button>
               <button type="button" class="table-action move-music-request" aria-label="Move down" title="Move down" data-id="${request.request_id}" data-swap-id="${next ? next.request_id : ''}" ${next ? '' : 'disabled'}>↓<span class="move-label"> Down</span></button>
             </span>
+            <details class="music-more-menu music-mobile-more-menu">
+              <summary aria-label="More options" title="More options">⋮</summary>
+              <div class="music-more-popover">
+                <div class="music-mobile-menu-artist">${escapeHtml(request.artist_name || 'Not listed')}</div>
+                <button type="button" class="preview-music-request" data-id="${request.request_id}" ${hasValidYouTube ? '' : 'disabled title="Missing YouTube link"'}>Preview</button>
+                <button type="button" class="edit-music-request" data-id="${request.request_id}">Edit</button>
+                <button type="button" class="delete-music-request danger" data-id="${request.request_id}">Delete</button>
+              </div>
+            </details>
           </div>
         </td>
         <td>
