@@ -320,7 +320,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="music-song-main">
               <input class="music-select-checkbox" type="checkbox" aria-label="Select ${escapeHtml(request.song_name)}" data-id="${request.request_id}" ${checkedIds.has(Number(request.request_id)) ? 'checked' : ''}>
               <span class="music-song-text">
-                <strong>${escapeHtml(request.song_name)}</strong>
+                <strong
+                  class="${hasValidYouTube ? 'music-song-preview-trigger' : ''}"
+                  data-id="${request.request_id}"
+                  ${hasValidYouTube ? 'role="button" tabindex="0" title="Tap to preview"' : ''}
+                >${escapeHtml(request.song_name)}</strong>
                 <span class="music-category-tag">${escapeHtml(request.category_name || 'Uncategorized')}</span>
               </span>
             </span>
@@ -552,7 +556,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, true);
 
+
+  tbody.addEventListener('keydown', event => {
+    const songPreviewTrigger = event.target.closest('.music-song-preview-trigger');
+    if (!songPreviewTrigger || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    const request = requests.find(item => String(item.request_id) === songPreviewTrigger.dataset.id);
+    if (request) openSongPreview(request);
+  });
+
   tbody.addEventListener('click', async event => {
+    const songPreviewTrigger = event.target.closest('.music-song-preview-trigger');
+    if (songPreviewTrigger) {
+      const request = requests.find(item => String(item.request_id) === songPreviewTrigger.dataset.id);
+      if (request) openSongPreview(request);
+      return;
+    }
+
     const moveButton = event.target.closest('.move-music-request');
     if (moveButton) {
       const requestId = Number(moveButton.dataset.id);

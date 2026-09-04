@@ -1,0 +1,24 @@
+VeraPachamanca — Tap Song to Preview
+
+Replace only:
+- music-requests.html
+- js/music-requests.js
+
+Behavior:
+- Tap/click a song name with a valid YouTube link -> existing Preview modal opens.
+- Preview behavior is the same as the existing Preview item in the 3-dot menu.
+- Songs without a valid YouTube link are not made clickable.
+- Enter/Space also opens preview for keyboard users.
+
+Unchanged:
+- Queue All / Queue Filtered / Queue Checked
+- No-autoplay queue behavior
+- Category filtering
+- Artist-in-3-dot mobile layout
+- Database/API
+- Add/Edit/Delete
+- YouTube search
+
+Validation:
+PASS - JavaScript syntax check
+PASS - queue/filter regression checks

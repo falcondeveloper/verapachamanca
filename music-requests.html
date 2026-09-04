@@ -1206,6 +1206,14 @@
       }
     }
 
+    .music-song-preview-trigger {
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .music-song-preview-trigger:active {
+      opacity: .65;
+    }
+
   </style>
 </head>
 <body>
@@ -1367,7 +1375,7 @@
   <footer class="site-footer compact-footer"><div><p>verapachamanca.com</p><p>© 2026 Vera Family</p></div></footer>
 
   <script src="js/main.js?v=20260826-menu1"></script>
-  <script src="js/music-requests.js?v=20260904-mobile-song-artist-menu1"></script>
+  <script src="js/music-requests.js?v=20260904-tap-song-preview1"></script>
 
   <div class="song-preview-modal" id="song-preview-modal" hidden>
     <div class="song-preview-backdrop" data-song-preview-close></div>
